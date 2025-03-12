@@ -41,8 +41,8 @@
             "title": "Generate Commit",
             "category": "Commit AI",
             "icon": {
-               "light": "./src/assets/button_light.png",
-               "dark": "./src/assets/button_dark.png"
+               "light": "src/assets/button_light.png",
+               "dark": "src/assets/button_dark.png"
             }
          }
       ],
