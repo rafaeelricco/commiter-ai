@@ -1,0 +1,139 @@
+{
+   "name": "commit-ai-generator",
+   "displayName": "Commit AI Generator",
+   "description": "Generate informative commit messages using AI through OpenRouter's API. Streamline your version control workflow with AI-powered commit messages that follow popular commit norms.",
+   "version": "1.0.0",
+   "publisher": "rafaeelricco",
+   "license": "MIT",
+   "engines": {
+      "vscode": "^1.48.0"
+   },
+   "pricing": "Free",
+   "categories": [
+      "Machine Learning",
+      "Other"
+   ],
+   "keywords": [
+      "ai",
+      "artificial intelligence",
+      "commit",
+      "commit message",
+      "commit messages",
+      "commit norm",
+      "commit norms",
+      "generate commit",
+      "generate commit message",
+      "generator commit",
+      "openrouter",
+      "openai",
+      "gemini",
+      "llm"
+   ],
+   "galleryBanner": {
+      "color": "#4F4FFF",
+      "theme": "dark"
+   },
+   "main": "./out/extension.js",
+   "contributes": {
+      "commands": [
+         {
+            "command": "commit_ai.generateCommit",
+            "title": "Generate Commit",
+            "category": "Commit AI",
+            "icon": {
+               "light": "./src/assets/button_light.png",
+               "dark": "./src/assets/button_dark.png"
+            }
+         }
+      ],
+      "menus": {
+         "scm/title": [
+            {
+               "command": "commit_ai.generateCommit",
+               "when": "scmProvider == git",
+               "group": "navigation"
+            }
+         ]
+      },
+      "configuration": {
+         "title": "Commit AI",
+         "properties": {
+            "commit_ai.api_key": {
+               "type": "string",
+               "default": null,
+               "markdownDescription": "Your API key. To get your API key, visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here."
+            },
+            "commit_ai.prompt.max_tokens": {
+               "type": "number",
+               "default": 500,
+               "minimum": 10,
+               "markdownDescription": "The maximum number of tokens to generate in the completion. Adjust the value based on the model you are using."
+            },
+            "commit_ai.prompt.custom_prompt": {
+               "type": "string",
+               "default": "",
+               "markdownDescription": "Set a custom prompt describing the commit message format to generate."
+            },
+            "commit_ai.prompt.temperature": {
+               "type": "number",
+               "default": 0.7,
+               "minimum": 0,
+               "maximum": 2,
+               "markdownDescription": "Controls randomness: Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive. **``0.7`` is recommended**"
+            },
+            "commit_ai.prompt.model": {
+               "type": "string",
+               "default": "google/gemini-2.0-pro-exp-02-05:free",
+               "markdownDescription": "The model to use for generating commit messages. Visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here. Pricing varies by model. Check [OpenRouter pricing](https://openrouter.ai/pricing) for details."
+            }
+         }
+      }
+   },
+   "scripts": {
+      "vscode:prepublish": "npm run compile",
+      "compile": "tsc -p ./",
+      "watch": "tsc -watch -p ./",
+      "pretest": "npm run compile && npm run lint",
+      "lint": "eslint src --ext ts",
+      "test": "node ./out/test/runTest.js",
+      "style": "eslint --fix src/**/*.ts"
+   },
+   "devDependencies": {
+      "@eslint/js": "^9.22.0",
+      "@types/mocha": "^10.0.10",
+      "@types/node": "~18.19.80",
+      "@types/sinon": "^17.0.4",
+      "@types/vscode": "^1.48.0",
+      "@vscode/test-electron": "^2.4.1",
+      "esbuild": "^0.19.12",
+      "eslint": "^9.22.0",
+      "globals": "^16.0.0",
+      "lodash": "^4.17.21",
+      "mocha": "^11.1.0",
+      "sinon": "^19.0.2",
+      "typescript-eslint": "^8.26.1",
+      "prettier": "3.5.3"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/rafaeelricco/commit-ai.git"
+   },
+   "author": "Rafael Ricco",
+   "bugs": {
+      "url": "https://github.com/rafaeelricco/commit-ai/issues"
+   },
+   "homepage": "https://github.com/rafaeelricco/commit-ai#readme",
+   "dependencies": {
+      "glob": "^11.0.1",
+      "typescript": "^5.8.2"
+   },
+   "bundleDependencies": [
+      "glob",
+      "typescript"
+   ],
+   "packageManager": "npm@9.5.0",
+   "vsce": {
+      "dependencies": true,
+      "devDependencies": false
+   }
+}
