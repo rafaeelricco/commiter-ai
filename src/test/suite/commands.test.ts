@@ -3,23 +3,23 @@ import * as vscode from 'vscode'
 
 suite('Commands Test Suite', () => {
    // Função auxiliar para esperar um tempo determinado
-   const sleep = (ms: number): Promise<void> => 
-      new Promise(resolve => setTimeout(resolve, ms))
+   const sleep = (ms: number): Promise<void> =>
+      new Promise((resolve) => setTimeout(resolve, ms))
 
    // Setup e teardown
-   setup(async function() {
+   setup(async function () {
       // Configuração antes de cada teste
       this.timeout(10000) // Aumentando o timeout para 10 segundos
-      
+
       // Garantir que a extensão está ativada
       const extension = vscode.extensions.getExtension(
-         'rafaeelricco.commit-ai-generator'
+         'rafaeelricco.commiter-ai-generator'
       )
-      
+
       if (extension && !extension.isActive) {
          await extension.activate()
       }
-      
+
       // Esperar um momento para a extensão inicializar completamente
       await sleep(1000)
    })
@@ -28,14 +28,14 @@ suite('Commands Test Suite', () => {
       // Limpeza após cada teste
    })
 
-   test('O comando commit_ai.generateCommit deve estar registrado', async function() {
+   test('O comando commiter_ai.generateCommit deve estar registrado', async function () {
       this.timeout(5000) // Aumentando o timeout para 5 segundos
-      
+
       const commands = await vscode.commands.getCommands()
       assert.strictEqual(
-         commands.includes('commit_ai.generateCommit'),
+         commands.includes('commiter_ai.generateCommit'),
          true,
-         'O comando commit_ai.generateCommit deve estar registrado'
+         'O comando commiter_ai.generateCommit deve estar registrado'
       )
    })
 

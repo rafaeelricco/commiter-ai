@@ -24,7 +24,7 @@ export async function generateCommitCommand(): Promise<void> {
          if (response === setKeyAction) {
             await vscode.commands.executeCommand(
                'workbench.action.openSettings',
-               'commit_ai.api_key'
+               'commiter_ai.api_key'
             )
          }
          return

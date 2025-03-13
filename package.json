@@ -1,6 +1,6 @@
 {
-   "name": "commit-ai-generator",
-   "displayName": "Commit AI Generator",
+   "name": "commiter-ai-generator",
+   "displayName": "Commiter Ai",
    "description": "Generate informative commit messages using AI through OpenRouter's API. Streamline your version control workflow with AI-powered commit messages that follow popular commit norms.",
    "version": "1.0.0",
    "publisher": "rafaeelricco",
@@ -38,7 +38,7 @@
    "contributes": {
       "commands": [
          {
-            "command": "commit_ai.generateCommit",
+            "command": "commiter_ai.generateCommit",
             "title": "Generate Commit",
             "category": "Commit AI",
             "icon": {
@@ -50,7 +50,7 @@
       "menus": {
          "scm/title": [
             {
-               "command": "commit_ai.generateCommit",
+               "command": "commiter_ai.generateCommit",
                "when": "scmProvider == git",
                "group": "navigation"
             }
@@ -59,30 +59,30 @@
       "configuration": {
          "title": "Commit AI",
          "properties": {
-            "commit_ai.api_key": {
+            "commiter_ai.api_key": {
                "type": "string",
                "default": null,
                "markdownDescription": "Your API key. To get your API key, visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here."
             },
-            "commit_ai.prompt.max_tokens": {
+            "commiter_ai.prompt.max_tokens": {
                "type": "number",
                "default": 500,
                "minimum": 10,
                "markdownDescription": "The maximum number of tokens to generate in the completion. Adjust the value based on the model you are using."
             },
-            "commit_ai.prompt.custom_prompt": {
+            "commiter_ai.prompt.custom_prompt": {
                "type": "string",
                "default": "",
                "markdownDescription": "Set a custom prompt describing the commit message format to generate."
             },
-            "commit_ai.prompt.temperature": {
+            "commiter_ai.prompt.temperature": {
                "type": "number",
                "default": 0.7,
                "minimum": 0,
                "maximum": 2,
                "markdownDescription": "Controls randomness: Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive. **``0.7`` is recommended**"
             },
-            "commit_ai.prompt.model": {
+            "commiter_ai.prompt.model": {
                "type": "string",
                "default": "google/gemini-2.0-pro-exp-02-05:free",
                "markdownDescription": "The model to use for generating commit messages. Visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here. Pricing varies by model. Check [OpenRouter pricing](https://openrouter.ai/pricing) for details."
@@ -117,13 +117,13 @@
    },
    "repository": {
       "type": "git",
-      "url": "git+https://github.com/rafaeelricco/commit-ai.git"
+      "url": "git+https://github.com/rafaeelricco/commiter-ai.git"
    },
    "author": "Rafael Ricco",
    "bugs": {
-      "url": "https://github.com/rafaeelricco/commit-ai/issues"
+      "url": "https://github.com/rafaeelricco/commiter-ai/issues"
    },
-   "homepage": "https://github.com/rafaeelricco/commit-ai#readme",
+   "homepage": "https://github.com/rafaeelricco/commiter-ai#readme",
    "dependencies": {
       "glob": "^11.0.1",
       "typescript": "^5.8.2"

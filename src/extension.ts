@@ -8,7 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 
    // Register the generate commit command
    const generateCommit = vscode.commands.registerCommand(
-      'commit_ai.generateCommit',
+      'commiter_ai.generateCommit',
       generateCommitCommand
    )
 

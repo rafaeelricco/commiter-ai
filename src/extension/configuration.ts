@@ -8,7 +8,7 @@ export function registerExtensionSettings(context: vscode.ExtensionContext) {
    // Register configuration change listener
    context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((e) => {
-         if (e.affectsConfiguration('commit_ai')) {
+         if (e.affectsConfiguration('commiter_ai')) {
             // Handle configuration changes if needed
          }
       })
@@ -21,7 +21,7 @@ export function registerExtensionSettings(context: vscode.ExtensionContext) {
  */
 export function isApiKeySet(): boolean {
    const apiKey = vscode.workspace
-      .getConfiguration('commit_ai')
+      .getConfiguration('commiter_ai')
       .get<string>('api_key')
    return apiKey !== null && apiKey !== undefined && apiKey !== ''
 }
@@ -32,7 +32,7 @@ export function isApiKeySet(): boolean {
  */
 export function getApiKey(): string | null {
    return (
-      vscode.workspace.getConfiguration('commit_ai').get<string>('api_key') ||
+      vscode.workspace.getConfiguration('commiter_ai').get<string>('api_key') ||
       null
    )
 }
@@ -44,7 +44,7 @@ export function getApiKey(): string | null {
 export function getMaxTokens(): number {
    return (
       vscode.workspace
-         .getConfiguration('commit_ai')
+         .getConfiguration('commiter_ai')
          .get<number>('prompt.max_tokens') || 500
    )
 }
@@ -56,7 +56,7 @@ export function getMaxTokens(): number {
 export function getCustomPrompt(): string {
    return (
       vscode.workspace
-         .getConfiguration('commit_ai')
+         .getConfiguration('commiter_ai')
          .get<string>('prompt.custom_prompt') || ''
    )
 }
@@ -68,7 +68,7 @@ export function getCustomPrompt(): string {
 export function getTemperature(): number {
    return (
       vscode.workspace
-         .getConfiguration('commit_ai')
+         .getConfiguration('commiter_ai')
          .get<number>('prompt.temperature') || 0.7
    )
 }
@@ -80,7 +80,7 @@ export function getTemperature(): number {
 export function getModel(): string {
    return (
       vscode.workspace
-         .getConfiguration('commit_ai')
+         .getConfiguration('commiter_ai')
          .get<string>('prompt.model') || 'google/gemini-2.0-pro-exp-02-05:free'
    )
 }
