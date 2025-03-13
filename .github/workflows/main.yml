@@ -1,31 +1,61 @@
-name: On push
+name: Publish Extension
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
 
 jobs:
-   publish:
-     name: Publish to Microsoft
-     runs-on: ubuntu-latest
-     environment: production
-     steps:
-       - name: Checkout code
-         uses: actions/checkout@v3
+  check-version:
+    name: Check Version Change
+    runs-on: ubuntu-latest
+    outputs:
+      version_changed: ${{ steps.check_version.outputs.version_changed }}
+      version: ${{ steps.check_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
 
-       - name: Setup Node.js
-         uses: actions/setup-node@v3
-         with:
-           node-version: '18'
-           
-       - name: Install dependencies
-         run: npm install
-         
-       - name: Increment patch version
-         run: npm version patch --no-git-tag-version
-         
-       - name: Package extension
-         run: npm run package
+      - name: Check if version changed
+        id: check_version
+        run: |
+          git diff HEAD^ HEAD -- package.json | grep '"version":' || echo "No version change found"
+          if git diff HEAD^ HEAD -- package.json | grep '"version":'; then
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            VERSION=$(grep '"version":' package.json | cut -d'"' -f4)
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Version changed to: $VERSION"
+          else
+            echo "version_changed=false" >> $GITHUB_OUTPUT
+            echo "Version did not change"
+          fi
 
-       - name: Publish to VS Code Marketplace
-         run: npx @vscode/vsce publish -p "${{ secrets.MICROSOFT_TOKEN }}"
+  publish:
+    name: Publish to Microsoft
+    needs: check-version
+    if: needs.check-version.outputs.version_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Package extension
+        run: npm run package
+
+      - name: Publish to VS Code Marketplace
+        run: npx @vscode/vsce publish -p "${{ secrets.MICROSOFT_TOKEN }}"
+        
+      - name: Output published version
+        run: echo "Published version ${{ needs.check-version.outputs.version }}"
