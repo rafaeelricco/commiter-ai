@@ -3,7 +3,7 @@
    "displayName": "Commiter Ai",
    "description": "Generate informative commit messages using AI through OpenRouter's API. Streamline your version control workflow with AI-powered commit messages that follow popular commit norms.",
    "version": "1.0.0",
-   "publisher": "rafaeelricco",
+   "publisher": "r1cco",
    "license": "MIT",
    "engines": {
       "vscode": "^1.48.0"
