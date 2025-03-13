@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI, powered by OpenRouter. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.0.1",
+   "version": "1.0.2",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
@@ -84,7 +84,7 @@
             },
             "commiter_ai.prompt.model": {
                "type": "string",
-               "default": "google/gemini-2.0-pro-exp-02-05:free",
+               "default": "google/gemma-3-27b-it:free",
                "markdownDescription": "The model to use for generating commit messages. Visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here. Pricing varies by model. Check [OpenRouter pricing](https://openrouter.ai/pricing) for details."
             },
             "commiter_ai.prompt.commit_style": {
