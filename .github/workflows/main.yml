@@ -31,5 +31,4 @@ jobs:
          with:
            pat: ${{ secrets.MICROSOFT_TOKEN }}
            packagePath: "${{ env.VSIX_FILE }}"
-         working-directory: .
 
