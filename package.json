@@ -111,9 +111,9 @@
       "globals": "^16.0.0",
       "lodash": "^4.17.21",
       "mocha": "^11.1.0",
+      "prettier": "3.5.3",
       "sinon": "^19.0.2",
-      "typescript-eslint": "^8.26.1",
-      "prettier": "3.5.3"
+      "typescript-eslint": "^8.26.1"
    },
    "repository": {
       "type": "git",
@@ -125,12 +125,16 @@
    },
    "homepage": "https://github.com/rafaeelricco/commiter-ai#readme",
    "dependencies": {
+      "dotenv": "^16.4.5",
       "glob": "^11.0.1",
+      "openai": "^4.87.3",
       "typescript": "^5.8.2"
    },
    "bundleDependencies": [
       "glob",
-      "typescript"
+      "typescript",
+      "openai",
+      "dotenv"
    ],
    "packageManager": "npm@9.5.0",
    "vsce": {
