@@ -1,8 +1,8 @@
 {
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
-   "description": "Generate informative commit messages using AI through OpenRouter's API. Streamline your version control workflow with AI-powered commit messages that follow popular commit norms.",
-   "version": "1.0.0",
+   "description": "Effortlessly generate smart commit messages with AI, powered by OpenRouter. Streamline your workflow and maintain a clean commit history.",
+   "version": "1.0.1",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
