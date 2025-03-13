@@ -86,6 +86,31 @@
                "type": "string",
                "default": "google/gemini-2.0-pro-exp-02-05:free",
                "markdownDescription": "The model to use for generating commit messages. Visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here. Pricing varies by model. Check [OpenRouter pricing](https://openrouter.ai/pricing) for details."
+            },
+            "commiter_ai.prompt.commit_style": {
+               "type": "string",
+               "enum": [
+                  "conventional",
+                  "linus",
+                  "imperative",
+                  "prefix",
+                  "context",
+                  "ticket",
+                  "symbol",
+                  "concise"
+               ],
+               "default": "concise",
+               "enumDescriptions": [
+                  "Conventional Commits (feat: add login feature)",
+                  "Linus Torvalds style (Title followed by detailed explanation)",
+                  "Imperative verb style (Add login feature)",
+                  "Simple prefix style (fix: login bug)",
+                  "Context style ([frontend] Add login component)",
+                  "Ticket ID style (JIRA-101 - Add feature X)",
+                  "Symbol style ([+] Add search feature)",
+                  "Concise style (brief and to the point)"
+               ],
+               "markdownDescription": "Select a predefined commit message style or format."
             }
          }
       }
@@ -97,7 +122,8 @@
       "pretest": "npm run compile && npm run lint",
       "lint": "eslint src --ext ts",
       "test": "node ./out/test/runTest.js",
-      "style": "eslint --fix src/**/*.ts"
+      "style": "eslint --fix src/**/*.ts",
+      "package": "npm run compile && npx @vscode/vsce package"
    },
    "devDependencies": {
       "@eslint/js": "^9.22.0",
