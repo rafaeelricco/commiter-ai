@@ -24,8 +24,5 @@ jobs:
        - name: Package extension
          run: npm run package
 
-       - name: Login to VS Code Marketplace
-         run: echo "${{ secrets.MICROSOFT_TOKEN }}" | npx vsce login r1cco
-
        - name: Publish to VS Code Marketplace
-         run: npx vsce publish
+         run: npx @vscode/vsce publish -p "${{ secrets.MICROSOFT_TOKEN }}"
