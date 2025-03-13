@@ -4,19 +4,11 @@ import * as vscode from 'vscode'
 
 const execAsync = promisify(exec)
 
-/**
- * Interface for Git repository information
- */
 export interface GitRepository {
    rootPath: string
 }
 
-/**
- * Get the current Git repository
- * @returns Git repository info or null if not in a git repository
- */
 export async function getCurrentRepository(): Promise<GitRepository | null> {
-   // Get the git extension
    const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports
    if (!gitExtension) {
       throw new Error(
@@ -35,11 +27,6 @@ export async function getCurrentRepository(): Promise<GitRepository | null> {
    }
 }
 
-/**
- * Get the staged changes diff
- * @param repo Git repository
- * @returns Diff of staged changes
- */
 export async function getStagedDiff(repo: GitRepository): Promise<string> {
    try {
       const { stdout } = await execAsync('git diff --staged', {
@@ -55,11 +42,6 @@ export async function getStagedDiff(repo: GitRepository): Promise<string> {
    }
 }
 
-/**
- * Get the unstaged changes diff
- * @param repo Git repository
- * @returns Diff of unstaged changes
- */
 export async function getUnstagedDiff(repo: GitRepository): Promise<string> {
    try {
       const { stdout } = await execAsync('git diff', { cwd: repo.rootPath })
@@ -73,10 +55,6 @@ export async function getUnstagedDiff(repo: GitRepository): Promise<string> {
    }
 }
 
-/**
- * Set the commit message in the Source Control panel
- * @param message Commit message to set
- */
 export function setCommitMessage(message: string): void {
    const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports
    if (!gitExtension) {

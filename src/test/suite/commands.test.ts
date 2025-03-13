@@ -2,16 +2,12 @@ import * as assert from 'assert'
 import * as vscode from 'vscode'
 
 suite('Commands Test Suite', () => {
-   // Função auxiliar para esperar um tempo determinado
    const sleep = (ms: number): Promise<void> =>
       new Promise((resolve) => setTimeout(resolve, ms))
 
-   // Setup e teardown
    setup(async function () {
-      // Configuração antes de cada teste
-      this.timeout(10000) // Aumentando o timeout para 10 segundos
+      this.timeout(10000)
 
-      // Garantir que a extensão está ativada
       const extension = vscode.extensions.getExtension(
          'rafaeelricco.commiter-ai-generator'
       )
@@ -20,42 +16,39 @@ suite('Commands Test Suite', () => {
          await extension.activate()
       }
 
-      // Esperar um momento para a extensão inicializar completamente
       await sleep(1000)
    })
 
-   teardown(() => {
-      // Limpeza após cada teste
-   })
+   teardown(() => {})
 
-   test('O comando commiter_ai.generateCommit deve estar registrado', async function () {
-      this.timeout(5000) // Aumentando o timeout para 5 segundos
+   test('The command commiter_ai.generateCommit should be registered', async function () {
+      this.timeout(5000)
 
       const commands = await vscode.commands.getCommands()
       assert.strictEqual(
          commands.includes('commiter_ai.generateCommit'),
          true,
-         'O comando commiter_ai.generateCommit deve estar registrado'
+         'The command commiter_ai.generateCommit should be registered'
       )
    })
 
-   // Este teste só funcionará depois que você instalar sinon
-   // e adaptar para sua implementação real
-   test.skip('Teste de geração de commit (desativado)', async () => {
-      // Para implementar este teste, você precisará:
-      // 1. Instalar sinon: npm install --save-dev sinon @types/sinon
-      // 2. Exportar suas funções no arquivo commands.ts
-      // 3. Descomentar o código abaixo e adaptá-lo
+   // This test will only work after you install sinon
+   // and adapt it to your actual implementation
+   test.skip('Commit generation test (disabled)', async () => {
+      // To implement this test, you will need to:
+      // 1. Install sinon: npm install --save-dev sinon @types/sinon
+      // 2. Export your functions in the commands.ts file
+      // 3. Uncomment the code below and adapt it
       /*
-    // Mock da API
+    // API mock
     const apiStub = sinon.stub().resolves({
-      message: 'feat: adiciona feature de geração de commits'
+      message: 'feat: adds commit generation feature'
     });
     
-    // Chamar sua função real aqui
+    // Call your actual function here
     // const result = await generateCommitMessage(...);
     
-    // assert.strictEqual(result, 'feat: adiciona feature de geração de commits');
+    // assert.strictEqual(result, 'feat: adds commit generation feature');
     */
    })
 })

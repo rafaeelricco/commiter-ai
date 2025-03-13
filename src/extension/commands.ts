@@ -2,18 +2,14 @@ import * as vscode from 'vscode'
 import { generateCommitMessage } from './api'
 import { isApiKeySet } from './configuration'
 import {
-  getCurrentRepository,
-  getStagedDiff,
-  getUnstagedDiff,
-  setCommitMessage
+   getCurrentRepository,
+   getStagedDiff,
+   getUnstagedDiff,
+   setCommitMessage
 } from './git'
 
-/**
- * Command handler for the generate commit command
- */
 export async function generateCommitCommand(): Promise<void> {
    try {
-      // Check if the API key is set
       if (!isApiKeySet()) {
          const setKeyAction = 'Set API Key'
          const response = await vscode.window.showErrorMessage(
@@ -30,7 +26,6 @@ export async function generateCommitCommand(): Promise<void> {
          return
       }
 
-      // Get the current Git repository
       const repo = await getCurrentRepository()
       if (!repo) {
          vscode.window.showErrorMessage(
@@ -39,10 +34,8 @@ export async function generateCommitCommand(): Promise<void> {
          return
       }
 
-      // Get the diff for staged changes
       let diff = await getStagedDiff(repo)
 
-      // If no staged changes, ask if the user wants to use unstaged changes
       if (!diff.trim()) {
          const useUnstagedAction = 'Use unstaged changes'
          const response = await vscode.window.showInformationMessage(
@@ -66,13 +59,9 @@ export async function generateCommitCommand(): Promise<void> {
       }
 
       try {
-         // Generate the commit message
          const commitMessage = await generateCommitMessage(diff)
-
-         // Set the commit message in the SCM input box
          setCommitMessage(commitMessage)
 
-         // Show a success message
          vscode.window.showInformationMessage(
             'Commit message generated successfully!'
          )

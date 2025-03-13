@@ -2,45 +2,38 @@ import * as assert from 'assert'
 import * as vscode from 'vscode'
 
 suite('Extension Test Suite', () => {
-   vscode.window.showInformationMessage('Iniciando os testes.')
+   vscode.window.showInformationMessage('Starting the tests.')
 
-   // Função auxiliar para esperar um tempo determinado
    const sleep = (ms: number): Promise<void> =>
       new Promise((resolve) => setTimeout(resolve, ms))
 
-   test('Extension deve estar ativada', async function () {
-      this.timeout(10000) // Aumentando o timeout para 10 segundos
+   test('Extension should be activated', async function () {
+      this.timeout(10000)
 
-      // Aguardar um momento para a extensão ativar
       await sleep(2000)
 
       const extension = vscode.extensions.getExtension(
          'rafaeelricco.commiter-ai-generator'
       )
 
-      assert.ok(extension, 'Extensão não foi encontrada')
+      assert.ok(extension, 'Extension not found')
 
-      // Garantir que a extensão está ativada ou ativá-la
       if (!extension.isActive) {
          await extension.activate()
       }
 
-      assert.strictEqual(extension.isActive, true, 'Extensão não foi ativada')
+      assert.strictEqual(extension.isActive, true, 'Extension was not activated')
    })
 
-   // Exemplo de teste para verificar se o comando está registrado
-   test('Comando "commiter_ai.generateCommit" deve estar registrado', async function () {
-      this.timeout(5000) // Aumentando o timeout para 5 segundos
+   test('Command "commiter_ai.generateCommit" should be registered', async function () {
+      this.timeout(5000)
 
-      // Esperar um pouco para garantir que os comandos foram registrados
       await sleep(1000)
 
       const commands = await vscode.commands.getCommands()
       assert.ok(
          commands.includes('commiter_ai.generateCommit'),
-         'Comando commiter_ai.generateCommit não foi registrado'
+         'Command commiter_ai.generateCommit was not registered'
       )
    })
-
-   // Adicione mais testes específicos para suas funcionalidades
 })

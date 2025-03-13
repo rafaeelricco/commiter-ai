@@ -1,24 +1,14 @@
 import * as vscode from 'vscode'
 
-/**
- * Register extension settings and provide utility functions to access them
- * @param context VSCode extension context
- */
 export function registerExtensionSettings(context: vscode.ExtensionContext) {
-   // Register configuration change listener
    context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((e) => {
          if (e.affectsConfiguration('commiter_ai')) {
-            // Handle configuration changes if needed
          }
       })
    )
 }
 
-/**
- * Check if the API key is set
- * @returns True if the API key is set, false otherwise
- */
 export function isApiKeySet(): boolean {
    const apiKey = vscode.workspace
       .getConfiguration('commiter_ai')
@@ -26,10 +16,6 @@ export function isApiKeySet(): boolean {
    return apiKey !== null && apiKey !== undefined && apiKey !== ''
 }
 
-/**
- * Get the API key from settings
- * @returns The API key or null if not set
- */
 export function getApiKey(): string | null {
    return (
       vscode.workspace.getConfiguration('commiter_ai').get<string>('api_key') ||
@@ -37,10 +23,6 @@ export function getApiKey(): string | null {
    )
 }
 
-/**
- * Get the maximum number of tokens to generate
- * @returns The maximum number of tokens
- */
 export function getMaxTokens(): number {
    return (
       vscode.workspace
@@ -49,10 +31,6 @@ export function getMaxTokens(): number {
    )
 }
 
-/**
- * Get the custom prompt if set
- * @returns The custom prompt or empty string
- */
 export function getCustomPrompt(): string {
    return (
       vscode.workspace
@@ -61,10 +39,6 @@ export function getCustomPrompt(): string {
    )
 }
 
-/**
- * Get the temperature setting
- * @returns The temperature value
- */
 export function getTemperature(): number {
    return (
       vscode.workspace
@@ -73,10 +47,6 @@ export function getTemperature(): number {
    )
 }
 
-/**
- * Get the model to use
- * @returns The model identifier
- */
 export function getModel(): string {
    return (
       vscode.workspace
@@ -85,14 +55,10 @@ export function getModel(): string {
    )
 }
 
-/**
- * Get the selected commit style
- * @returns The selected commit style
- */
 export function getCommitStyle(): string {
    return (
       vscode.workspace
          .getConfiguration('commiter_ai')
-         .get<string>('prompt.commit_style') || 'concise'
+         .get<string>('prompt.commit_style') || 'conventional'
    )
 }
