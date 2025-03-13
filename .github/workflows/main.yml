@@ -17,10 +17,13 @@ jobs:
          uses: actions/setup-node@v3
          with:
            node-version: '18'
-
+           
        - name: Install dependencies
          run: npm install
-
+         
+       - name: Increment patch version
+         run: npm version patch --no-git-tag-version
+         
        - name: Package extension
          run: npm run package
 
