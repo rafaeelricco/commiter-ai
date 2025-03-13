@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI, powered by OpenRouter. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.0.2",
+   "version": "1.0.3",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
@@ -99,7 +99,7 @@
                   "symbol",
                   "concise"
                ],
-               "default": "concise",
+               "default": "conventional",
                "enumDescriptions": [
                   "Conventional Commits (feat: add login feature)",
                   "Linus Torvalds style (Title followed by detailed explanation)",
