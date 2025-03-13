@@ -24,11 +24,12 @@ jobs:
        - name: Package extension
          run: |
            npm run package
-           echo "VSIX_FILE=$(ls *.vsix)" >> $GITHUB_ENV
+           mkdir -p dist
+           mv *.vsix dist/
+           echo "VSIX_PATH=dist/$(ls dist/*.vsix)" >> $GITHUB_ENV
 
        - name: Publish to Marketplace
          uses: HaaLeo/publish-vscode-extension@v2
          with:
            pat: ${{ secrets.MICROSOFT_TOKEN }}
-           packagePath: "${{ env.VSIX_FILE }}"
-
+           packagePath: ${{ env.VSIX_PATH }}
