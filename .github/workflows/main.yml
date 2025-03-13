@@ -22,14 +22,10 @@ jobs:
          run: npm install
 
        - name: Package extension
-         run: |
-           npm run package
-           mkdir -p dist
-           mv *.vsix dist/
-           echo "VSIX_PATH=dist/$(ls dist/*.vsix)" >> $GITHUB_ENV
+         run: npm run package
 
-       - name: Publish to Marketplace
-         uses: HaaLeo/publish-vscode-extension@v2
-         with:
-           pat: ${{ secrets.MICROSOFT_TOKEN }}
-           packagePath: ${{ env.VSIX_PATH }}
+       - name: Login to VS Code Marketplace
+         run: echo "${{ secrets.MICROSOFT_TOKEN }}" | npx vsce login r1cco
+
+       - name: Publish to VS Code Marketplace
+         run: npx vsce publish
