@@ -34,6 +34,7 @@
       "theme": "dark"
    },
    "main": "./out/extension.js",
+   "activationEvents": [],
    "contributes": {
       "commands": [
          {
@@ -134,6 +135,9 @@
    "packageManager": "npm@9.5.0",
    "vsce": {
       "dependencies": true,
-      "devDependencies": false
+      "devDependencies": false,
+      "files": [
+         "src/assets/**/*"
+      ]
    }
 }

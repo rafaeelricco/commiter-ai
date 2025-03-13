@@ -11,6 +11,7 @@ node_modules/**
 !node_modules/glob
 !node_modules/typescript
 src/**
+!src/assets/**
 out/test/**
 test/**
 .git/**
