@@ -134,7 +134,8 @@
       "glob",
       "typescript",
       "openai",
-      "dotenv"
+      "dotenv",
+      "vscode"
    ],
    "packageManager": "npm@9.5.0",
    "vsce": {
