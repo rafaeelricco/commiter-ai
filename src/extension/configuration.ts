@@ -84,3 +84,15 @@ export function getModel(): string {
          .get<string>('prompt.model') || 'google/gemini-2.0-pro-exp-02-05:free'
    )
 }
+
+/**
+ * Get the selected commit style
+ * @returns The selected commit style
+ */
+export function getCommitStyle(): string {
+   return (
+      vscode.workspace
+         .getConfiguration('commiter_ai')
+         .get<string>('prompt.commit_style') || 'concise'
+   )
+}
