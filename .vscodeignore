@@ -1,34 +1,41 @@
+# development directories
 .vscode/**
 .vscode-test/**
+.git/**
+.github/**
+src/**
+test/**
+out/test/**
+
+# preserve assets
+!src/assets/**
+
+# configuration files
 .gitignore
+.gitattributes
 .yarnrc
-vsc-extension-quickstart.md
+.editorconfig
+.prettierrc
+.prettier*
+.eslintrc.js
+.eslintrc.json
+.eslint*
 **/tsconfig.json
 **/.eslintrc.json
-**/*.map
+
+# build files
 **/*.ts
+**/*.map
+*.tgz
+*.vsix
+webpack.config.js
+pnpm-lock.yaml  
+
+# documentation
+vsc-extension-quickstart.md
+
+# node_modules
 node_modules/**
 node_modules/glob
 node_modules/typescript
 !node_modules/sound-play
-src/**
-!src/assets/**
-out/test/**
-test/**
-.git/**
-.github/**
-**/*.ts
-**/*.map
-.prettierrc
-.eslintrc.js
-.eslintrc.json
-.gitattributes
-.editorconfig
-*.tgz
-*.vsix
-webpack.config.js
-pnpm-lock.yaml
-.eslint*
-.prettier*
-*.map
-test/
