@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.0.6",
+   "version": "1.0.7",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
