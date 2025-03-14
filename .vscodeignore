@@ -9,7 +9,7 @@ vsc-extension-quickstart.md
 **/*.ts
 node_modules/**
 !node_modules/glob
-!node_modules/typescript
+node_modules/typescript
 !node_modules/sound-play
 src/**
 !src/assets/**

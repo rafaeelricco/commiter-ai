@@ -11,7 +11,7 @@
       "esModuleInterop": true,
       "allowSyntheticDefaultImports": true,
       "skipLibCheck": true,
-      "declaration": true,
+      "declaration": false,
       "forceConsistentCasingInFileNames": true,
       "resolveJsonModule": true,
       "baseUrl": ".",
