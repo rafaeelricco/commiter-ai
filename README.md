@@ -14,7 +14,6 @@ Commiter AI is a powerful VS Code extension that automatically generates intelli
 ### AI-Powered Commit Message Generation
 
 - Analyze your staged changes and generate contextually appropriate commit messages
-- Support for both staged and unstaged changes
 - Automatic detection of the type of changes made (feature, fix, refactor, etc.)
 - Clean, concise, and properly formatted commit messages
 
