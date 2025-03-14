@@ -48,7 +48,7 @@ Commiter AI supports various commit message styles to match your project's conve
 
 1. Open VS Code
 2. Go to Extensions (Ctrl+Shift+X)
-3. Search for "Commiter AI"
+3. Search for [Commiter AI](https://marketplace.visualstudio.com/items?itemName=r1cco.commiter-ai-generator)
 4. Click Install
 
 ### Configuration
