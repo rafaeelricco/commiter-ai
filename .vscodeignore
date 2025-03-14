@@ -26,3 +26,11 @@ test/**
 *.tgz
 *.vsix
 webpack.config.js
+node_modules/
+pnpm-lock.yaml
+src/
+tsconfig.json
+.eslint*
+.prettier*
+*.map
+test/
