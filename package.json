@@ -32,7 +32,7 @@
    ],
    "galleryBanner": {
       "color": "#4F4FFF",
-      "theme": "dark"
+      "theme": "light"
    },
    "main": "./out/extension.js",
    "activationEvents": [],
