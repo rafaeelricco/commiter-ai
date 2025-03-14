@@ -1,13 +1,13 @@
 import * as vscode from 'vscode'
 
-import { generateCommitMessage } from './api'
-import { isApiKeySet } from './configuration'
+import { generateCommitMessage } from '@/extension/api'
+import { isApiKeySet } from '@/extension/configuration'
 import {
    getCurrentRepository,
    getStagedDiff,
    getUnstagedDiff,
    setCommitMessage
-} from './git'
+} from '@/extension/git'
 
 export async function generateCommitCommand(): Promise<void> {
    try {

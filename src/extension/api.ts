@@ -7,7 +7,7 @@ import {
    getMaxTokens,
    getModel,
    getTemperature
-} from './configuration'
+} from '@/extension/configuration'
 
 interface Message {
    role: 'user' | 'system' | 'assistant'

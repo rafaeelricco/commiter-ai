@@ -116,14 +116,17 @@
       }
    },
    "scripts": {
-      "vscode:prepublish": "npm run compile",
-      "compile": "tsc -p ./",
-      "watch": "tsc -watch -p ./",
+      "vscode:prepublish": "npm run build",
+      "compile": "tsc -p tsconfig.json && node ./out/utils/fix-aliases.js",
+      "build": "tsc -p tsconfig.json && node ./out/utils/fix-aliases.js",
+      "dev": "tsx ./src/extension.ts",
+      "watch": "tsx watch ./src/extension.ts",
+      "start": "node --import tsx/esm ./out/extension.js",
       "pretest": "npm run compile && npm run lint",
       "lint": "eslint src --ext ts",
       "test": "node ./out/test/runTest.js",
       "style": "eslint --fix src/**/*.ts",
-      "package": "npm run compile && npx @vscode/vsce package"
+      "package": "npm run build && npx @vscode/vsce package"
    },
    "devDependencies": {
       "@eslint/js": "^9.22.0",
@@ -139,6 +142,7 @@
       "mocha": "^11.1.0",
       "prettier": "3.5.3",
       "sinon": "^19.0.2",
+      "tsx": "^4.19.3",
       "typescript-eslint": "^8.26.1"
    },
    "repository": {
