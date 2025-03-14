@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI, powered by OpenRouter. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.0.4",
+   "version": "1.0.5",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
@@ -14,20 +14,21 @@
       "Other"
    ],
    "keywords": [
-      "ai",
-      "artificial intelligence",
-      "commit",
-      "commit message",
-      "commit messages",
-      "commit norm",
-      "commit norms",
-      "generate commit",
-      "generate commit message",
-      "generator commit",
+      "vscode",
+      "vscode-extension",
+      "git",
+      "developer-tools",
+      "ai-commit-messages",
+      "automated-commits",
+      "llm",
+      "code-productivity",
+      "git-workflow",
+      "commit-automation",
+      "ai-code-assistant",
       "openrouter",
       "openai",
       "gemini",
-      "llm"
+      "code-repository"
    ],
    "galleryBanner": {
       "color": "#4F4FFF",
@@ -38,7 +39,7 @@
    "contributes": {
       "commands": [
          {
-            "command": "commiter_ai.generateCommit",
+            "command": "commiter_ai.generate_commit",
             "title": "Generate Commit",
             "category": "Commit AI",
             "icon": {
@@ -50,44 +51,50 @@
       "menus": {
          "scm/title": [
             {
-               "command": "commiter_ai.generateCommit",
+               "command": "commiter_ai.generate_commit",
                "when": "scmProvider == git",
                "group": "navigation"
             }
          ]
       },
       "configuration": {
-         "title": "Commit AI",
+         "title": "Commiter Ai",
          "properties": {
             "commiter_ai.api_key": {
+               "title": "API Key",
                "type": "string",
                "default": null,
-               "markdownDescription": "Your API key. To get your API key, visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here."
+               "markdownDescription": "**Required:**\nObtain your API key from [OpenRouter.ai](https://openrouter.ai/keys). Navigate to 'Keys' > 'Create New Key', copy and paste here.\n\n**Security Note:** Keep this private - never commit it publicly!"
             },
             "commiter_ai.prompt.max_tokens": {
+               "title": "Max Tokens",
                "type": "number",
                "default": 200000,
                "minimum": 10,
-               "markdownDescription": "The maximum number of tokens to generate in the completion. Adjust the value based on the model you are using."
+               "markdownDescription": "**Response Length**\nControls maximum text units (tokens) in generated commit messages:\n- Lower values produce concise messages\n- Higher values allow detailed explanations\n\nRefer to model limits: [Supported Models](https://openrouter.ai/models)"
             },
             "commiter_ai.prompt.custom_prompt": {
+               "title": "Custom Prompt",
                "type": "string",
                "default": "",
-               "markdownDescription": "Set a custom prompt describing the commit message format to generate."
+               "markdownDescription": "**Custom Instructions**\nOverride default behavior with specific guidelines. Example:\n\n`Generate concise commits that:\n- Start with emoji\n- Reference JIRA tickets\n- Use present tense`\n\nLeave empty to use default settings"
             },
             "commiter_ai.prompt.temperature": {
+               "title": "Creativity",
                "type": "number",
                "default": 0.7,
                "minimum": 0,
                "maximum": 2,
-               "markdownDescription": "Controls randomness: Lowering results in less random completions. As the temperature approaches zero, the model will become deterministic and repetitive. **``0.7`` is recommended**"
+               "markdownDescription": "**Creativity**\n- 0.0: Predictable output\n- 0.7: Balanced (recommended)\n- 2.0: Experimental\n\nLower values follow strict conventions"
             },
             "commiter_ai.prompt.model": {
+               "title": "AI Model",
                "type": "string",
                "default": "google/gemini-2.0-pro-exp-02-05:free",
-               "markdownDescription": "The model to use for generating commit messages. Visit [openrouter.ai](https://openrouter.ai), select a model, click 'Copy' and paste here. Pricing varies by model. Check [OpenRouter pricing](https://openrouter.ai/pricing) for details."
+               "markdownDescription": "**AI Model Selection**\nChoose from [OpenRouter models](https://openrouter.ai/models). Consider:\n- Cost per token\n- Context window size\n- Response speed"
             },
             "commiter_ai.prompt.commit_style": {
+               "title": "Commit Style",
                "type": "string",
                "enum": [
                   "conventional",
@@ -101,14 +108,14 @@
                ],
                "default": "conventional",
                "enumDescriptions": [
-                  "Conventional Commits (feat: add login feature)",
-                  "Linus Torvalds style (Title followed by detailed explanation)",
-                  "Imperative verb style (Add login feature)",
-                  "Simple prefix style (fix: login bug)",
-                  "Context style ([frontend] Add login component)",
-                  "Ticket ID style (JIRA-101 - Add feature X)",
-                  "Symbol style ([+] Add search feature)",
-                  "Concise style (brief and to the point)"
+                  "**Conventional Commits**\n`feat: add login validation`\nStructured format for automated changelogs",
+                  "**Linus Style**\n`Login System\n\n- Implement OAuth2 flow\n- Add error handling`\nTitle followed by detailed body",
+                  "**Imperative Mood**\n`Implement password strength check`\nVerb-first, present tense",
+                  "**Simple Prefix**\n`fix: header alignment issue`\nCategory with brief description",
+                  "**Contextual**\n`[auth] Update session timeout`\nComponent-specific notation",
+                  "**Ticket Reference**\n`PROJ-123: Add user dashboard`\nLinks to task tracking systems",
+                  "**Symbol Notation**\n`[+] Enable dark mode toggle`\nVisual change indicators",
+                  "**Concise**\n`Optimize image loading`\nBrief summary without formatting"
                ],
                "markdownDescription": "Select a predefined commit message style or format."
             }

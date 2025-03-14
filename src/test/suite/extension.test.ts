@@ -22,18 +22,22 @@ suite('Extension Test Suite', () => {
          await extension.activate()
       }
 
-      assert.strictEqual(extension.isActive, true, 'Extension was not activated')
+      assert.strictEqual(
+         extension.isActive,
+         true,
+         'Extension was not activated'
+      )
    })
 
-   test('Command "commiter_ai.generateCommit" should be registered', async function () {
+   test('Command "commiter_ai.generate_commit" should be registered', async function () {
       this.timeout(5000)
 
       await sleep(1000)
 
       const commands = await vscode.commands.getCommands()
       assert.ok(
-         commands.includes('commiter_ai.generateCommit'),
-         'Command commiter_ai.generateCommit was not registered'
+         commands.includes('commiter_ai.generate_commit'),
+         'Command commiter_ai.generate_commit was not registered'
       )
    })
 })

@@ -21,14 +21,14 @@ suite('Commands Test Suite', () => {
 
    teardown(() => {})
 
-   test('The command commiter_ai.generateCommit should be registered', async function () {
+   test('The command commiter_ai.generate_commit should be registered', async function () {
       this.timeout(5000)
 
       const commands = await vscode.commands.getCommands()
       assert.strictEqual(
-         commands.includes('commiter_ai.generateCommit'),
+         commands.includes('commiter_ai.generate_commit'),
          true,
-         'The command commiter_ai.generateCommit should be registered'
+         'The command commiter_ai.generate_commit should be registered'
       )
    })
 
@@ -46,7 +46,7 @@ suite('Commands Test Suite', () => {
     });
     
     // Call your actual function here
-    // const result = await generateCommitMessage(...);
+    // const result = await generate_commit(...);
     
     // assert.strictEqual(result, 'feat: adds commit generation feature');
     */

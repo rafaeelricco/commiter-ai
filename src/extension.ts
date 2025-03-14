@@ -6,12 +6,12 @@ import { registerExtensionSettings } from '@/extension/configuration'
 export function activate(context: vscode.ExtensionContext) {
    registerExtensionSettings(context)
 
-   const generateCommit = vscode.commands.registerCommand(
-      'commiter_ai.generateCommit',
+   const gen = vscode.commands.registerCommand(
+      'commiter_ai.generate_commit',
       generateCommitCommand
    )
 
-   context.subscriptions.push(generateCommit)
+   context.subscriptions.push(gen)
 }
 
 export function deactivate() {}

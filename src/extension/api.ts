@@ -134,7 +134,7 @@ export async function generateCommitMessage(
                   headers: {
                      Authorization: `Bearer ${apiKey}`,
                      'HTTP-Referer': 'vscode-extension',
-                     'X-Title': 'Commit AI Generator',
+                     'X-Title': 'Commiter Ai',
                      'Content-Type': 'application/json'
                   },
                   body: JSON.stringify({
