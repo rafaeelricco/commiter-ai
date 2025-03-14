@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+
 import { generateCommitCommand } from './extension/commands'
 import { registerExtensionSettings } from './extension/configuration'
 

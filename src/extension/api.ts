@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+
 import {
    getApiKey,
    getCommitStyle,
@@ -8,9 +9,6 @@ import {
    getTemperature
 } from './configuration'
 
-/**
- * Message structure for OpenRouter API
- */
 interface Message {
    role: 'user' | 'system' | 'assistant'
    content:
@@ -24,9 +22,6 @@ interface Message {
         }>
 }
 
-/**
- * OpenRouter API response structure
- */
 interface OpenRouterResponse {
    id: string
    choices: Array<{
@@ -39,10 +34,6 @@ interface OpenRouterResponse {
    }
 }
 
-/**
- * Get the prompt for the selected commit style
- * @returns The prompt for the selected commit style
- */
 function getCommitStylePrompt(style: string): string {
    const styles: Record<string, string> = {
       conventional:
@@ -91,12 +82,6 @@ function getCommitStylePrompt(style: string): string {
    return styles[style] || styles.concise
 }
 
-/**
- * Generate a commit message using OpenRouter AI
- * @param diff The git diff to analyze
- * @param customPrompt Optional custom prompt to use
- * @returns Generated commit message
- */
 export async function generateCommitMessage(
    diff: string,
    customPrompt?: string
@@ -114,7 +99,6 @@ export async function generateCommitMessage(
    const userCustomPrompt = getCustomPrompt()
    const commitStyle = getCommitStyle()
 
-   // Build the prompt
    let prompt = customPrompt || userCustomPrompt
 
    if (!prompt) {
