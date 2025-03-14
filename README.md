@@ -21,14 +21,12 @@ Commiter AI is a powerful VS Code extension that automatically generates intelli
 
 Commiter AI supports various commit message styles to match your project's conventions:
 
-- **Conventional Commits**: `feat: add login validation`
-- **Linus Style**: Title followed by detailed explanation
-- **Imperative Mood**: `implement password strength check`
-- **Simple Prefix**: `fix: header alignment issue`
-- **Contextual**: `[auth] update session timeout`
-- **Ticket Reference**: `PROJ-123: add user dashboard`
-- **Symbol Notation**: `[+] enable dark mode toggle`
-- **Concise**: `optimize image loading`
+- **Conventional Commits**: `feat: add login validation` - Structured format for automated changelogs
+- **Linus Style**: Title followed by detailed body - `Login System` with bullet points for implementation details
+- **Contextual**: `[auth] update session timeout` - Includes the context of the change
+- **Ticket Reference**: `PROJ-123: add user dashboard` - References a ticket ID for traceability
+- **Symbol Notation**: `[+] enable dark mode toggle` - Visual indicators for change types
+- **Concise**: `optimize image loading` - Brief summary without extra formatting
 
 ### Customizable Settings
 
@@ -89,14 +87,12 @@ Commiter AI supports various commit message styles to match your project's conve
 
 The extension supports multiple commit message styles:
 
-- **Conventional**: Standard format for automated changelogs (`type: description`)
-- **Linus**: Title followed by detailed paragraph explanation
-- **Imperative**: Verb-first commands in present tense
-- **Prefix**: Simple category with brief description
-- **Context**: Component or area-specific notation
-- **Ticket**: References to task tracking systems
-- **Symbol**: Visual indicators for different types of changes
-- **Concise**: Brief summaries without special formatting
+- **Conventional Commits**: Structured format for automated changelogs, focusing on type and description. Example: `feat: add login validation`
+- **Linus Style**: A title followed by a detailed body, suitable for complex changes. Example: `Login System` with bullet points explaining implementation details
+- **Contextual**: Includes the context of the change, providing clarity on the area affected. Example: `[auth] update session timeout`
+- **Ticket Reference**: References a ticket ID in the message for traceability. Example: `PROJ-123: add user dashboard`
+- **Symbol Notation**: Uses symbols to indicate the type of change visually. Example: `[+] enable dark mode toggle`
+- **Concise**: A brief summary that captures the essence of the change without extra formatting. Example: `optimize image loading`
 
 ## Contributing
 

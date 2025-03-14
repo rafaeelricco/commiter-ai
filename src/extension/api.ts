@@ -47,16 +47,6 @@ function getCommitStylePrompt(style: string): string {
          'Title: brief explanation in one line (use imperative with lowercase first letter)\n\n' +
          'More detailed paragraph explaining the changes, the problem being solved, and motivation. Ensure the first letter of the title is lowercase.',
 
-      imperative:
-         'Generate a commit message that starts with a verb in the imperative mood describing what the commit does.\n\n' +
-         'Make sure the first letter of the commit message is lowercase.\n\n' +
-         'Example: "add validation for required form fields" or "fix login page rendering issue" NOT "Add validation" or "Fix issue"',
-
-      prefix:
-         'Generate a simple commit message with a prefix indicating the type of change, followed by a brief description.\n\n' +
-         'Make sure both the prefix and the first letter after the colon are lowercase.\n\n' +
-         'Example: "fix: login validation issue" or "update: user profile page" NOT "fix: Login validation" or "Update: user profile"',
-
       context:
          'Generate a commit message with the context or area of the project in square brackets, followed by a description.\n\n' +
          'Make sure the first letter after the context is lowercase.\n\n' +
@@ -100,13 +90,11 @@ export async function generateCommitMessage(
    const commitStyle = getCommitStyle()
 
    let prompt = customPrompt || userCustomPrompt
-
    if (!prompt) {
       prompt = getCommitStylePrompt(commitStyle)
    }
 
    prompt += '\n\nChanges:\n' + diff
-
    const messages: Message[] = [
       {
          role: 'user',
@@ -123,9 +111,7 @@ export async function generateCommitMessage(
          },
          async (progress, token) => {
             const controller = new AbortController()
-            token.onCancellationRequested(() => {
-               controller.abort()
-            })
+            token.onCancellationRequested(() => controller.abort())
 
             const response = await fetch(
                'https://openrouter.ai/api/v1/chat/completions',
@@ -163,7 +149,6 @@ export async function generateCommitMessage(
       }
 
       let message = response.choices[0].message.content.trim()
-
       if (message.startsWith('```') && message.endsWith('```')) {
          message = message.substring(3, message.length - 3).trim()
       } else if (message.startsWith('```')) {

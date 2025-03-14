@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.0.8",
+   "version": "1.0.9",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
@@ -99,8 +99,6 @@
                "enum": [
                   "conventional",
                   "linus",
-                  "imperative",
-                  "prefix",
                   "context",
                   "ticket",
                   "symbol",
@@ -108,14 +106,12 @@
                ],
                "default": "conventional",
                "enumDescriptions": [
-                  "**Conventional Commits**\n`feat: add login validation`\nStructured format for automated changelogs",
-                  "**Linus Style**\n`Login System\n\n- Implement OAuth2 flow\n- Add error handling`\nTitle followed by detailed body",
-                  "**Imperative Mood**\n`Implement password strength check`\nVerb-first, present tense",
-                  "**Simple Prefix**\n`fix: header alignment issue`\nCategory with brief description",
-                  "**Contextual**\n`[auth] Update session timeout`\nComponent-specific notation",
-                  "**Ticket Reference**\n`PROJ-123: Add user dashboard`\nLinks to task tracking systems",
-                  "**Symbol Notation**\n`[+] Enable dark mode toggle`\nVisual change indicators",
-                  "**Concise**\n`Optimize image loading`\nBrief summary without formatting"
+                  "**Conventional Commits**\n`feat: add login validation`\nStructured format for automated changelogs, focusing on type and description.",
+                  "**Linus Style**\n`Login System\n\n- Implement OAuth2 flow\n- Add error handling`\nA title followed by a detailed body, suitable for complex changes.",
+                  "**Contextual**\n`[auth] update session timeout`\nIncludes the context of the change, providing clarity on the area affected.",
+                  "**Ticket Reference**\n`PROJ-123: add user dashboard`\nReferences a ticket ID in the message for traceability.",
+                  "**Symbol Notation**\n`[+] Enable dark mode toggle`\nUses symbols to indicate the type of change visually.",
+                  "**Concise**\n`Optimize image loading`\nA brief summary that captures the essence of the change without extra formatting."
                ],
                "markdownDescription": "Select a predefined commit message style or format."
             },
