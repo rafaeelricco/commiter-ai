@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+
 import { generateCommitMessage } from './api'
 import { isApiKeySet } from './configuration'
 import {
@@ -12,7 +13,7 @@ export async function generateCommitCommand(): Promise<void> {
    try {
       if (!isApiKeySet()) {
          const setKeyAction = 'Set API Key'
-         const response = await vscode.window.showErrorMessage(
+         const response = await vscode.window.showWarningMessage(
             'API key not set. Please set your OpenRouter API key in the extension settings.',
             setKeyAction
          )
@@ -28,7 +29,7 @@ export async function generateCommitCommand(): Promise<void> {
 
       const repo = await getCurrentRepository()
       if (!repo) {
-         vscode.window.showErrorMessage(
+         vscode.window.showWarningMessage(
             'No Git repository found. Please open a Git repository.'
          )
          return
@@ -51,7 +52,7 @@ export async function generateCommitCommand(): Promise<void> {
          diff = await getUnstagedDiff(repo)
 
          if (!diff.trim()) {
-            vscode.window.showErrorMessage(
+            vscode.window.showWarningMessage(
                'No changes found. Please make some changes before generating a commit message.'
             )
             return
@@ -67,20 +68,20 @@ export async function generateCommitCommand(): Promise<void> {
          )
       } catch (error) {
          if (error instanceof Error) {
-            vscode.window.showErrorMessage(
+            vscode.window.showWarningMessage(
                `Failed to generate commit message: ${error.message}`
             )
          } else {
-            vscode.window.showErrorMessage(
+            vscode.window.showWarningMessage(
                `Failed to generate commit message: ${String(error)}`
             )
          }
       }
    } catch (error) {
       if (error instanceof Error) {
-         vscode.window.showErrorMessage(`Error: ${error.message}`)
+         vscode.window.showWarningMessage(`Error: ${error.message}`)
       } else {
-         vscode.window.showErrorMessage(`Error: ${String(error)}`)
+         vscode.window.showWarningMessage(`Error: ${String(error)}`)
       }
    }
 }

@@ -4,6 +4,7 @@ export function registerExtensionSettings(context: vscode.ExtensionContext) {
    context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((e) => {
          if (e.affectsConfiguration('commiter_ai')) {
+            // TODO: Handle configuration changes
          }
       })
    )
