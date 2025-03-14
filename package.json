@@ -116,17 +116,12 @@
       }
    },
    "scripts": {
-      "vscode:prepublish": "npm run build",
-      "compile": "tsc -p tsconfig.json && node ./out/utils/fix-aliases.js",
-      "build": "tsc -p tsconfig.json && node ./out/utils/fix-aliases.js",
       "dev": "tsx ./src/extension.ts",
       "watch": "tsx watch ./src/extension.ts",
-      "start": "node --import tsx/esm ./out/extension.js",
-      "pretest": "npm run compile && npm run lint",
+      "build": "tsc -p tsconfig.json && tsx ./src/utils/fix-aliases.ts",
       "lint": "eslint src --ext ts",
-      "test": "node ./out/test/runTest.js",
-      "style": "eslint --fix src/**/*.ts",
-      "package": "npm run build && npx @vscode/vsce package"
+      "test": "tsx ./src/test/run-tests.ts",
+      "package": "npm run build && npx @vscode/vsce package --no-dependencies --ignoreFile .vscodeignore"
    },
    "devDependencies": {
       "@eslint/js": "^9.22.0",
