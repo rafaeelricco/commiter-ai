@@ -9,7 +9,7 @@ suite('Commands Test Suite', () => {
       this.timeout(10000)
 
       const extension = vscode.extensions.getExtension(
-         'rafaeelricco.commiter-ai-generator'
+         'r1cco.commiter-ai-generator'
       )
 
       if (extension && !extension.isActive) {

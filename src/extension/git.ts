@@ -1,7 +1,10 @@
+import * as path from 'path'
 import * as vscode from 'vscode'
 
 import { exec } from 'child_process'
 import { promisify } from 'util'
+
+import soundPlay from 'sound-play'
 
 const execAsync = promisify(exec)
 
@@ -69,4 +72,22 @@ export function setCommitMessage(message: string): void {
 
    const repository = api.repositories[0]
    repository.inputBox.value = message
+}
+
+export async function playSound(): Promise<void> {
+   try {
+      const extensionPath = vscode.extensions.getExtension(
+         'r1cco.commiter-ai-generator'
+      )?.extensionPath
+
+      if (!extensionPath) {
+         throw new Error('Não foi possível encontrar o caminho da extensão')
+      }
+
+      const soundPath = path.join(extensionPath, 'src', 'assets', 'success.mp3')
+
+      await soundPlay.play(soundPath)
+   } catch (error) {
+      console.error('Erro ao reproduzir som:', error)
+   }
 }

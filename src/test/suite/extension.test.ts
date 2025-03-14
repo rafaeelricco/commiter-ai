@@ -13,7 +13,7 @@ suite('Extension Test Suite', () => {
       await sleep(2000)
 
       const extension = vscode.extensions.getExtension(
-         'rafaeelricco.commiter-ai-generator'
+         'r1cco.commiter-ai-generator'
       )
 
       assert.ok(extension, 'Extension not found')

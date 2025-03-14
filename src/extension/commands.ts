@@ -1,11 +1,12 @@
 import * as vscode from 'vscode'
 
 import { generateCommitMessage } from '@/extension/api'
-import { isApiKeySet } from '@/extension/configuration'
+import { isApiKeySet, isSoundEnabled } from '@/extension/configuration'
 import {
    getCurrentRepository,
    getStagedDiff,
    getUnstagedDiff,
+   playSound,
    setCommitMessage
 } from '@/extension/git'
 
@@ -62,6 +63,10 @@ export async function generateCommitCommand(): Promise<void> {
       try {
          const commitMessage = await generateCommitMessage(diff)
          setCommitMessage(commitMessage)
+
+         if (isSoundEnabled()) {
+            playSound()
+         }
 
          vscode.window.showInformationMessage(
             'Commit message generated successfully!'
