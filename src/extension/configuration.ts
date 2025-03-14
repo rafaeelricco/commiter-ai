@@ -4,7 +4,38 @@ export function registerExtensionSettings(context: vscode.ExtensionContext) {
    context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((e) => {
          if (e.affectsConfiguration('commiter_ai')) {
-            // TODO: Handle configuration changes
+            const apiKeyChanged = e.affectsConfiguration('commiter_ai.api_key')
+            const modelChanged = e.affectsConfiguration(
+               'commiter_ai.prompt.model'
+            )
+            const soundSettingChanged = e.affectsConfiguration(
+               'commiter_ai.sound_enabled'
+            )
+
+            if (apiKeyChanged) {
+               const isKeySet = isApiKeySet()
+               if (isKeySet) {
+                  vscode.window.showInformationMessage(
+                     'Commiter AI: API key atualizada com sucesso'
+                  )
+               } else {
+                  vscode.window.showWarningMessage(
+                     'Commiter AI: API key não configurada. A extensão não funcionará corretamente.'
+                  )
+               }
+            }
+
+            if (modelChanged) {
+               vscode.window.showInformationMessage(
+                  `Commiter AI: Modelo alterado para ${getModel()}`
+               )
+            }
+
+            if (soundSettingChanged) {
+               vscode.window.showInformationMessage(
+                  `Commiter AI: Som de feedback alterado para ${isSoundEnabled() ? 'Ativo' : 'Desativo'}`
+               )
+            }
          }
       })
    )
@@ -62,4 +93,10 @@ export function getCommitStyle(): string {
          .getConfiguration('commiter_ai')
          .get<string>('prompt.commit_style') || 'conventional'
    )
+}
+
+export function isSoundEnabled(): boolean {
+   return vscode.workspace
+      .getConfiguration('commiter_ai')
+      .get<boolean>('sound_enabled', true)
 }
