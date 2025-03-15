@@ -39,34 +39,40 @@ function getCommitStylePrompt(style: string): string {
       conventional:
          'Generate a commit message following the Conventional Commits format: type(optional scope): description\n\n' +
          'Choose an appropriate type from: feat, fix, docs, style, refactor, perf, test, build, ci, chore\n' +
-         'Keep the description concise and make sure the type is lowercase and the description starts with a lowercase letter. Example: "feat: add user login feature" NOT "feat: Add user login feature"',
+         'Keep the description concise and make sure the type is lowercase and the description starts with a lowercase letter. Example: "feat: add user login feature" NOT "feat: Add user login feature"\n\n' +
+         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       linus:
          'Generate a commit message following the Linus Torvalds style with a short title followed by a more detailed explanation.\n\n' +
          'Format:\n' +
          'Title: brief explanation in one line (use imperative with lowercase first letter)\n\n' +
-         'More detailed paragraph explaining the changes, the problem being solved, and motivation. Ensure the first letter of the title is lowercase.',
+         'More detailed paragraph explaining the changes, the problem being solved, and motivation. Ensure the first letter of the title is lowercase.\n\n' +
+         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       context:
          'Generate a commit message with the context or area of the project in square brackets, followed by a description.\n\n' +
          'Make sure the first letter after the context is lowercase.\n\n' +
-         'Example: "[frontend] add login component" or "[api] fix token validation" NOT "[frontend] Add login" or "[API] Fix token"',
+         'Example: "[frontend] add login component" or "[api] fix token validation" NOT "[frontend] Add login" or "[API] Fix token"\n\n' +
+         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       ticket:
          'Generate a commit message that references a ticket ID followed by a description of the change.\n\n' +
          'Make sure the first letter after the ticket reference is lowercase.\n\n' +
-         'Example: "JIRA-101 - add search functionality" or "GH-4321 - fix performance issue" NOT "JIRA-101 - Add search" or "GH-4321 - Fix issue"',
+         'Example: "JIRA-101 - add search functionality" or "GH-4321 - fix performance issue" NOT "JIRA-101 - Add search" or "GH-4321 - Fix issue"\n\n' +
+         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       symbol:
          'Generate a commit message that uses a symbol to identify the type of change, followed by a description.\n\n' +
          'Use symbols like: [+] for additions, [-] for removals, [^] for updates, [*] for fixes\n' +
          'Make sure the first letter after the symbol is lowercase.\n\n' +
-         'Example: "[+] add search feature" or "[*] fix critical login bug" NOT "[+] Add search" or "[*] Fix bug"',
+         'Example: "[+] add search feature" or "[*] fix critical login bug" NOT "[+] Add search" or "[*] Fix bug"\n\n' +
+         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       concise:
          'Generate a clear and concise commit message that describes the changes made. Focus on the purpose of the changes rather than just listing modifications.\n\n' +
          'Make sure the first letter of the commit message is lowercase.\n\n' +
-         'Example: "add user authentication" or "fix memory leak in API" NOT "Add user authentication" or "Fix memory leak"'
+         'Example: "add user authentication" or "fix memory leak in API" NOT "Add user authentication" or "Fix memory leak"\n\n' +
+         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".'
    }
 
    return styles[style] || styles.concise
