@@ -160,6 +160,14 @@ export async function generateCommitMessage(
          message = message.substring(firstLineBreak).trim()
       }
 
+      if (message.startsWith('diff\n')) {
+         message = message.substring(5).trim()
+      } else if (message.startsWith('diff ')) {
+         message = message.substring(5).trim()
+      } else if (message.startsWith('diff')) {
+         message = message.substring(4).trim()
+      }
+
       return message
    } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
