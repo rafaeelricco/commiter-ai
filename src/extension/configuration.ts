@@ -55,14 +55,6 @@ export function getApiKey(): string | null {
    )
 }
 
-export function getMaxTokens(): number {
-   return (
-      vscode.workspace
-         .getConfiguration('commiter_ai')
-         .get<number>('prompt.max_tokens') || 500
-   )
-}
-
 export function getCustomPrompt(): string {
    return (
       vscode.workspace

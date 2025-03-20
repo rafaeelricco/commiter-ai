@@ -4,7 +4,6 @@ import {
    getApiKey,
    getCommitStyle,
    getCustomPrompt,
-   getMaxTokens,
    getModel,
    getTemperature
 } from '@/extension/configuration'
@@ -90,7 +89,6 @@ export async function generateCommitMessage(
    }
 
    const model = getModel()
-   const maxTokens = getMaxTokens()
    const temperature = getTemperature()
    const userCustomPrompt = getCustomPrompt()
    const commitStyle = getCommitStyle()
@@ -132,7 +130,6 @@ export async function generateCommitMessage(
                   body: JSON.stringify({
                      model,
                      messages,
-                     max_tokens: maxTokens,
                      temperature
                   }),
                   signal: controller.signal

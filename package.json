@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.1.1",
+   "version": "1.1.2",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
@@ -65,13 +65,6 @@
                "type": "string",
                "default": null,
                "markdownDescription": "**Required:**\nObtain your API key from [OpenRouter.ai](https://openrouter.ai/keys). Navigate to 'Keys' > 'Create New Key', copy and paste here.\n\n**Security Note:** Keep this private - never commit it publicly!"
-            },
-            "commiter_ai.prompt.max_tokens": {
-               "title": "Max Tokens",
-               "type": "number",
-               "default": 200000,
-               "minimum": 10,
-               "markdownDescription": "**Response Length**\nControls maximum text units (tokens) in generated commit messages:\n- Lower values produce concise messages\n- Higher values allow detailed explanations\n\nRefer to model limits: [Supported Models](https://openrouter.ai/models)"
             },
             "commiter_ai.prompt.custom_prompt": {
                "title": "Custom Prompt",
