@@ -171,6 +171,14 @@ export async function generateCommitMessage(
          message = message.substring(4).trim()
       }
 
+      const boxedRegex = /\\boxed\{(.*?)\}/s
+      if (boxedRegex.test(message)) {
+         const match = message.match(boxedRegex)
+         if (match && match[1]) {
+            message = match[1].trim()
+         }
+      }
+
       return message
    } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
