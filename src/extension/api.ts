@@ -123,7 +123,7 @@ export async function generateCommitMessage(
    try {
       const response = await vscode.window.withProgress(
          {
-            location: vscode.ProgressLocation.Notification,
+            location: vscode.ProgressLocation.SourceControl,
             title: 'Generating commit message...',
             cancellable: true
          },
