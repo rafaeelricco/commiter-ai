@@ -36,9 +36,23 @@ interface OpenRouterResponse {
 function getCommitStylePrompt(style: string): string {
    const styles: Record<string, string> = {
       conventional:
-         'Generate a commit message following the Conventional Commits format: type(optional scope): description\n\n' +
+         'Generate a commit message following the Conventional Commits format with a detailed description based on the actual changes made:\n\n' +
+         'Format:\n' +
+         'type(optional scope): concise description\n\n' +
+         'detailed paragraph explaining the context, purpose and overview of the changes\n\n' +
+         '- bullet point for each specific change, implementation, or improvement\n' +
+         '- include as many bullet points as needed based on the actual changes\n' +
+         '- describe functions, components, and services that were modified\n' +
+         '- mention new features, bug fixes, or improvements in detail\n\n' +
          'Choose an appropriate type from: feat, fix, docs, style, refactor, perf, test, build, ci, chore\n' +
-         'Keep the description concise and make sure the type is lowercase and the description starts with a lowercase letter. Example: "feat: add user login feature" NOT "feat: Add user login feature"\n\n' +
+         'Ensure all text is in lowercase, including the first letter of each sentence.\n\n' +
+         'Example:\n' +
+         'feat(auth): implement user authentication flow\n\n' +
+         'this commit introduces the complete authentication flow for users. it includes:\n\n' +
+         '- added login and registration forms in the AuthComponent\n' +
+         '- implemented token validation using AuthService\n' +
+         '- added proper error handling for network failures\n' +
+         '- improved UI feedback during authentication process\n\n' +
          'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       linus:
