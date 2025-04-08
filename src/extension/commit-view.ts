@@ -210,8 +210,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          // Convert string URI back to vscode URI object
          const fileUri = vscode.Uri.parse(uri)
 
-         // Use VS Code's built-in Git commands
-         await vscode.commands.executeCommand('git.stage', fileUri)
+         // Use repository's API directly
+         await repo.add([fileUri.fsPath])
 
          // Update UI after a small delay to ensure Git has updated
          setTimeout(() => this._sendRepositoryState(), 300)
@@ -234,8 +234,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          // Convert string URI back to vscode URI object
          const fileUri = vscode.Uri.parse(uri)
 
-         // Use VS Code's built-in Git commands
-         await vscode.commands.executeCommand('git.unstage', fileUri)
+         // Use repository's API directly
+         await repo.revert([fileUri.fsPath])
 
          // Update UI after a small delay to ensure Git has updated
          setTimeout(() => this._sendRepositoryState(), 300)
