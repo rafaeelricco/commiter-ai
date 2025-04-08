@@ -29,6 +29,8 @@ interface GitRepository {
 
 interface GitAPI {
    repositories: GitRepository[]
+   onDidChangeState?: (callback: () => void) => vscode.Disposable
+   onDidChangeRepository?: (callback: () => void) => vscode.Disposable
 }
 
 export class CommitViewProvider implements vscode.WebviewViewProvider {
@@ -37,6 +39,13 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
    private _view?: vscode.WebviewView
    private _gitApi?: GitAPI
    private _isGenerating: boolean = false
+   private _disposables: vscode.Disposable[] = []
+   private _debounceTimer: NodeJS.Timeout | null = null
+   private _diffCache = new Map<
+      string,
+      { timestamp: number; content: string }
+   >()
+   private _repositoryWatcher: vscode.Disposable | NodeJS.Timeout | undefined
 
    constructor(private readonly _extensionUri: vscode.Uri) {}
 
@@ -54,12 +63,12 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
       webviewView.webview.html = _getHtmlForWebview(webviewView.webview)
 
-      this._startRepositoryPolling()
+      this._startRepositoryStateTracking()
 
       webviewView.webview.onDidReceiveMessage(async (data) => {
          switch (data.type) {
             case 'getRepositoryState': {
-               await this._sendRepositoryState()
+               await this._debouncedSendRepositoryState()
                break
             }
             case 'stageFile': {
@@ -79,7 +88,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                break
             }
             case 'refreshChanges': {
-               await this._sendRepositoryState()
+               await this._debouncedSendRepositoryState()
                break
             }
             case 'generateCommit': {
@@ -107,6 +116,30 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
             }
          }
       })
+
+      webviewView.onDidDispose(() => {
+         this._diffCache.clear()
+         if (this._repositoryWatcher) {
+            if (typeof this._repositoryWatcher === 'number') {
+               clearInterval(this._repositoryWatcher)
+            } else if ('dispose' in this._repositoryWatcher) {
+               this._repositoryWatcher.dispose()
+            }
+         }
+         this._disposables.forEach((d) => d.dispose())
+         this._disposables = []
+      })
+   }
+
+   private _debouncedSendRepositoryState() {
+      if (this._debounceTimer) {
+         clearTimeout(this._debounceTimer)
+      }
+
+      this._debounceTimer = setTimeout(() => {
+         this._sendRepositoryState()
+         this._debounceTimer = null
+      }, 300)
    }
 
    private async _sendRepositoryState() {
@@ -152,18 +185,21 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
    }
 
    private _formatChangedFiles(changes: any[] = []) {
-      return changes.map((change) => {
-         // Get the file path relative to the repository root
+      if (!changes.length) return []
+
+      const result = new Array(changes.length)
+
+      for (let i = 0; i < changes.length; i++) {
+         const change = changes[i]
          const path = change.uri.path
          const relativePath = change.relativePath || path.split('/').pop()
 
-         // For files in subfolders, we need the folder path and filename separate
          const pathParts = relativePath.split('/')
          const fileName = pathParts.pop() || ''
          const folderPath =
             pathParts.length > 0 ? pathParts.join('/') + '/' : ''
 
-         return {
+         result[i] = {
             fileName,
             folderPath,
             relativePath,
@@ -173,7 +209,9 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
             statusText: this._getStatusText(change.status),
             statusCode: this._getStatusCode(change.status)
          }
-      })
+      }
+
+      return result
    }
 
    private _getStatusText(status: string): string {
@@ -228,7 +266,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          await repo.add([fileUri.fsPath])
 
-         setTimeout(() => this._sendRepositoryState(), 300)
+         this._debouncedSendRepositoryState()
       } catch (error) {
          console.error('Error staging file:', error)
          vscode.window.showErrorMessage(
@@ -249,7 +287,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          await repo.revert([fileUri.fsPath])
 
-         setTimeout(() => this._sendRepositoryState(), 300)
+         this._debouncedSendRepositoryState()
       } catch (error) {
          console.error('Error unstaging file:', error)
          vscode.window.showErrorMessage(
@@ -266,7 +304,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          await vscode.commands.executeCommand('git.stageAll')
 
-         setTimeout(() => this._sendRepositoryState(), 300)
+         this._debouncedSendRepositoryState()
       } catch (error) {
          console.error('Error staging all changes:', error)
          vscode.window.showErrorMessage(
@@ -283,7 +321,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          await vscode.commands.executeCommand('git.unstageAll')
 
-         setTimeout(() => this._sendRepositoryState(), 300)
+         this._debouncedSendRepositoryState()
       } catch (error) {
          console.error('Error unstaging all changes:', error)
          vscode.window.showErrorMessage(
@@ -332,7 +370,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
             await repo.clean([fileUri])
 
-            setTimeout(() => this._sendRepositoryState(), 300)
+            this._debouncedSendRepositoryState()
          } catch (error) {
             console.error('Error discarding changes:', error)
             vscode.window.showErrorMessage(
@@ -363,7 +401,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
             value: ''
          })
 
-         setTimeout(() => this._sendRepositoryState(), 300)
+         this._debouncedSendRepositoryState()
+         this._diffCache.clear()
 
          vscode.window.showInformationMessage('Changes committed successfully!')
       } catch (error) {
@@ -462,12 +501,30 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
       }
    }
 
-   private _startRepositoryPolling() {
-      setInterval(async () => {
-         if (this._view && this._view.visible) {
-            await this._sendRepositoryState()
+   private _startRepositoryStateTracking() {
+      // Try to use git events first (more efficient)
+      this._ensureGitApi().then((gitApi) => {
+         if (gitApi) {
+            const onDidChangeRepository =
+               gitApi.onDidChangeState || gitApi.onDidChangeRepository
+            if (onDidChangeRepository) {
+               const disposable = onDidChangeRepository(() => {
+                  if (this._view && this._view.visible) {
+                     this._debouncedSendRepositoryState()
+                  }
+               })
+               this._disposables.push(disposable)
+               this._repositoryWatcher = disposable
+               return
+            }
          }
-      }, 3000)
+
+         this._repositoryWatcher = setInterval(() => {
+            if (this._view && this._view.visible) {
+               this._debouncedSendRepositoryState()
+            }
+         }, 5000)
+      })
    }
 
    private async _ensureGitApi() {
@@ -502,6 +559,10 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
       repo: GitRepository,
       indexChanges: GitChange[]
    ): Promise<string> {
+      const MAX_FILE_SIZE = 500 * 1024
+      const CACHE_TTL = 30 * 1000
+      const now = Date.now()
+
       let diffOutput = 'STAGED CHANGES SUMMARY:\n\n'
 
       diffOutput += 'Files changed:\n'
@@ -514,8 +575,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
       for (const change of indexChanges) {
          const filePath = change.uri.path.split('/').pop() || change.uri.path
+         const cacheKey = `${change.uri.toString()}_${change.status}`
 
-         diffOutput += 'File: ' + filePath + ' (' + change.status + ')\n'
+         const cachedDiff = this._diffCache.get(cacheKey)
+         if (cachedDiff && now - cachedDiff.timestamp < CACHE_TTL) {
+            diffOutput += cachedDiff.content
+            continue
+         }
+
+         let fileDiffOutput = 'File: ' + filePath + ' (' + change.status + ')\n'
 
          let statusDescription = ''
          switch (change.status) {
@@ -538,7 +606,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                statusDescription = change.status
          }
 
-         diffOutput += 'Status: ' + statusDescription + '\n'
+         fileDiffOutput += 'Status: ' + statusDescription + '\n'
 
          try {
             if (change.status !== 'D') {
@@ -546,28 +614,40 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                   const fileContent = await repo.show(change.uri.toString())
 
                   if (typeof fileContent === 'string') {
-                     const lines = fileContent.split('\n')
-                     const previewLines = lines.slice(
-                        0,
-                        Math.min(15, lines.length)
-                     )
+                     const fileSize = fileContent.length
 
-                     diffOutput += '\nPreview content:\n'
-                     diffOutput +=
-                        previewLines.map((line) => '+ ' + line).join('\n') +
-                        '\n'
+                     if (fileSize > MAX_FILE_SIZE) {
+                        fileDiffOutput += `\nLarge file detected (${Math.round(fileSize / 1024)}KB).\n`
+                        fileDiffOutput += 'Preview of first 15 lines:\n'
+                        const firstLines = fileContent.split('\n', 15)
+                        fileDiffOutput +=
+                           firstLines.map((line) => '+ ' + line).join('\n') +
+                           '\n'
+                        fileDiffOutput += `\n... (${fileSize} bytes total, preview truncated) ...\n`
+                     } else {
+                        const lines = fileContent.split('\n')
+                        const previewLines = lines.slice(
+                           0,
+                           Math.min(15, lines.length)
+                        )
 
-                     if (lines.length > 15) {
-                        diffOutput +=
-                           '\n... (' +
-                           (lines.length - 15) +
-                           ' more lines) ...\n'
+                        fileDiffOutput += '\nPreview content:\n'
+                        fileDiffOutput +=
+                           previewLines.map((line) => '+ ' + line).join('\n') +
+                           '\n'
+
+                        if (lines.length > 15) {
+                           fileDiffOutput +=
+                              '\n... (' +
+                              (lines.length - 15) +
+                              ' more lines) ...\n'
+                        }
                      }
                   } else {
-                     diffOutput += 'Arquivo binário ou não suportado.\n'
+                     fileDiffOutput += 'Arquivo binário ou não suportado.\n'
                   }
                } catch (contentError) {
-                  diffOutput +=
+                  fileDiffOutput +=
                      'Não foi possível obter o conteúdo: ' +
                      (contentError instanceof Error
                         ? contentError.message
@@ -575,10 +655,17 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                      '\n'
                }
             } else {
-               diffOutput += '\nFile was deleted\n'
+               fileDiffOutput += '\nFile was deleted\n'
             }
 
-            diffOutput += '\n----------------------------------------\n\n'
+            fileDiffOutput += '\n----------------------------------------\n\n'
+
+            this._diffCache.set(cacheKey, {
+               timestamp: now,
+               content: fileDiffOutput
+            })
+
+            diffOutput += fileDiffOutput
          } catch (fileError) {
             diffOutput +=
                'Erro ao processar arquivo: ' +
