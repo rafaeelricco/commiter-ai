@@ -224,14 +224,10 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          if (!gitApi || gitApi.repositories.length === 0) return
 
          const repo = gitApi.repositories[0]
-
-         // Convert string URI back to vscode URI object
          const fileUri = vscode.Uri.parse(uri)
 
-         // Use repository's API directly
          await repo.add([fileUri.fsPath])
 
-         // Update UI after a small delay to ensure Git has updated
          setTimeout(() => this._sendRepositoryState(), 300)
       } catch (error) {
          console.error('Error staging file:', error)
@@ -249,13 +245,10 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          const repo = gitApi.repositories[0]
 
-         // Convert string URI back to vscode URI object
          const fileUri = vscode.Uri.parse(uri)
 
-         // Use repository's API directly
          await repo.revert([fileUri.fsPath])
 
-         // Update UI after a small delay to ensure Git has updated
          setTimeout(() => this._sendRepositoryState(), 300)
       } catch (error) {
          console.error('Error unstaging file:', error)
@@ -271,10 +264,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const gitApi = await this._ensureGitApi()
          if (!gitApi || gitApi.repositories.length === 0) return
 
-         // Use VS Code's built-in Git commands
          await vscode.commands.executeCommand('git.stageAll')
 
-         // Update UI
          setTimeout(() => this._sendRepositoryState(), 300)
       } catch (error) {
          console.error('Error staging all changes:', error)
@@ -290,10 +281,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const gitApi = await this._ensureGitApi()
          if (!gitApi || gitApi.repositories.length === 0) return
 
-         // Use VS Code's built-in Git commands
          await vscode.commands.executeCommand('git.unstageAll')
 
-         // Update UI
          setTimeout(() => this._sendRepositoryState(), 300)
       } catch (error) {
          console.error('Error unstaging all changes:', error)
@@ -313,8 +302,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          await vscode.commands.executeCommand(
             'vscode.diff',
-            toGitUri(fileUri, '~'), // Previous version
-            fileUri, // Current version
+            toGitUri(fileUri, '~'),
+            fileUri,
             'File Changes'
          )
       } catch (error) {
@@ -343,7 +332,6 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
             await repo.clean([fileUri])
 
-            // Update UI
             setTimeout(() => this._sendRepositoryState(), 300)
          } catch (error) {
             console.error('Error discarding changes:', error)
@@ -368,16 +356,13 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const repo = gitApi.repositories[0]
          await repo.commit(message)
 
-         // Limpar o campo de entrada após o commit
          repo.inputBox.value = ''
 
-         // Também limpar a interface do usuário
          this._view?.webview.postMessage({
             type: 'commitSuccess',
             value: ''
          })
 
-         // Update UI
          setTimeout(() => this._sendRepositoryState(), 300)
 
          vscode.window.showInformationMessage('Changes committed successfully!')
@@ -417,20 +402,17 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          return
       }
 
-      // Indicate that we are generating the commit
       this._isGenerating = true
       this._view?.webview.postMessage({ type: 'generating' })
       await this._sendRepositoryState()
 
       try {
-         // Get formatted diff for AI
          const diffData = await this._getDiffFormatted(repo, indexChanges)
 
          if (!diffData) {
             throw new Error('Não foi possível obter os dados do diff.')
          }
 
-         // Check API key
          const apiKey = vscode.workspace
             .getConfiguration('commiter_ai')
             .get<string>('api_key')
@@ -440,19 +422,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
             )
          }
 
-         // Generate commit message
          const commitMessage = await generateCommitMessage(diffData)
 
-         // Update commit message in SCM input
          repo.inputBox.value = commitMessage
 
-         // Notify success
          this._view?.webview.postMessage({
             type: 'successCommitGeneration',
             value: commitMessage
          })
 
-         // Play sound if enabled
          const soundEnabled = vscode.workspace
             .getConfiguration('commiter_ai')
             .get<boolean>('sound_enabled')
@@ -534,15 +512,11 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
       diffOutput += '\n--- DETAILED CHANGES ---\n\n'
 
-      // Now show detailed changes
       for (const change of indexChanges) {
-         // Extract relative file name from URI
          const filePath = change.uri.path.split('/').pop() || change.uri.path
 
-         // Add file header for each change
          diffOutput += 'File: ' + filePath + ' (' + change.status + ')\n'
 
-         // Status type description
          let statusDescription = ''
          switch (change.status) {
             case 'A':
@@ -566,16 +540,12 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
          diffOutput += 'Status: ' + statusDescription + '\n'
 
-         // Get detailed diff for this file
          try {
-            // For added, modified, or copied files, get content
             if (change.status !== 'D') {
-               // Not a deleted file
                try {
                   const fileContent = await repo.show(change.uri.toString())
 
                   if (typeof fileContent === 'string') {
-                     // For text files, show the first lines
                      const lines = fileContent.split('\n')
                      const previewLines = lines.slice(
                         0,
@@ -587,7 +557,6 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         previewLines.map((line) => '+ ' + line).join('\n') +
                         '\n'
 
-                     // If file is large, indicate how many lines were omitted
                      if (lines.length > 15) {
                         diffOutput +=
                            '\n... (' +
