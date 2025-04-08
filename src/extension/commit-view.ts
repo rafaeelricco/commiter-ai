@@ -210,8 +210,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          // Convert string URI back to vscode URI object
          const fileUri = vscode.Uri.parse(uri)
 
-         // Add file to index
-         await repo.add([fileUri])
+         // Use VS Code's built-in Git commands
+         await vscode.commands.executeCommand('git.stage', fileUri)
 
          // Update UI after a small delay to ensure Git has updated
          setTimeout(() => this._sendRepositoryState(), 300)
@@ -234,8 +234,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          // Convert string URI back to vscode URI object
          const fileUri = vscode.Uri.parse(uri)
 
-         // Unstage the file (using reset on the specific file)
-         await repo.unstage([fileUri])
+         // Use VS Code's built-in Git commands
+         await vscode.commands.executeCommand('git.unstage', fileUri)
 
          // Update UI after a small delay to ensure Git has updated
          setTimeout(() => this._sendRepositoryState(), 300)
@@ -253,10 +253,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const gitApi = await this._ensureGitApi()
          if (!gitApi || gitApi.repositories.length === 0) return
 
-         const repo = gitApi.repositories[0]
-
-         // Stage all changes
-         await repo.add([])
+         // Use VS Code's built-in Git commands
+         await vscode.commands.executeCommand('git.stageAll')
 
          // Update UI
          setTimeout(() => this._sendRepositoryState(), 300)
@@ -274,10 +272,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const gitApi = await this._ensureGitApi()
          if (!gitApi || gitApi.repositories.length === 0) return
 
-         const repo = gitApi.repositories[0]
-
-         // Unstage all changes
-         await repo.unstage([])
+         // Use VS Code's built-in Git commands
+         await vscode.commands.executeCommand('git.unstageAll')
 
          // Update UI
          setTimeout(() => this._sendRepositoryState(), 300)
