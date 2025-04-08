@@ -12,11 +12,42 @@ function getNonce() {
    return text
 }
 
+// Interface para representar uma mudança no arquivo Git
+interface GitChange {
+   uri: vscode.Uri
+   status: string
+   relativePath?: string
+}
+
+// Interface para representar um repositório Git
+interface GitRepository {
+   state: {
+      HEAD?: { name: string }
+      indexChanges: GitChange[]
+      workingTreeChanges: GitChange[]
+      untrackedChanges: GitChange[]
+   }
+   inputBox: {
+      value: string
+   }
+   rootUri: vscode.Uri
+   add: (paths: string[]) => Promise<void>
+   revert: (paths: string[]) => Promise<void>
+   commit: (message: string) => Promise<void>
+   clean: (resources: vscode.Uri[]) => Promise<void>
+   show: (resource: string) => Promise<string>
+}
+
+// Interface que representa a API do Git do VS Code
+interface GitAPI {
+   repositories: GitRepository[]
+}
+
 export class CommitViewProvider implements vscode.WebviewViewProvider {
    public static readonly viewType = 'commiterAiView'
 
    private _view?: vscode.WebviewView
-   private _gitApi?: any // Cache Git API
+   private _gitApi?: GitAPI // Cache Git API
    private _isGenerating: boolean = false
 
    constructor(private readonly _extensionUri: vscode.Uri) {}
@@ -494,8 +525,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
    }
 
    private async _getDiffFormatted(
-      repo: any,
-      indexChanges: any[]
+      repo: GitRepository,
+      indexChanges: GitChange[]
    ): Promise<string> {
       // Build a text format diff from indexed changes
       let diffOutput = 'STAGED CHANGES SUMMARY:\n\n'
