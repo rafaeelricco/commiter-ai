@@ -381,6 +381,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const repo = gitApi.repositories[0]
          await repo.commit(message)
 
+         // Limpar o campo de entrada após o commit
+         repo.inputBox.value = ''
+
+         // Também limpar a interface do usuário
+         this._view?.webview.postMessage({
+            type: 'commitSuccess',
+            value: ''
+         })
+
          // Update UI
          setTimeout(() => this._sendRepositoryState(), 300)
 
@@ -1165,6 +1174,11 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                                 generateButton.innerHTML = '<span class="icon">✨</span> Generate Message';
                                 commitMessage.value = message.value;
                                 commitButton.disabled = !message.value.trim() || state.staged.length === 0;
+                                break;
+                            case 'commitSuccess':
+                                showStatus('Changes committed successfully!', 'status-success');
+                                commitMessage.value = '';
+                                commitButton.disabled = true;
                                 break;
                             case 'error':
                                 showStatus('❌ ' + message.value, 'status-error');
