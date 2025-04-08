@@ -37,6 +37,25 @@
    "main": "./out/extension.js",
    "activationEvents": [],
    "contributes": {
+      "viewsContainers": {
+         "activitybar": [
+            {
+               "id": "commiterAiActivity",
+               "title": "Commiter AI",
+               "icon": "src/assets/sparkle-dark.png"
+            }
+         ]
+      },
+      "views": {
+         "commiterAiActivity": [
+            {
+               "id": "commiterAiView",
+               "name": "Generate Commit",
+               "type": "webview",
+               "contextualTitle": "Commiter AI"
+            }
+         ]
+      },
       "commands": [
          {
             "command": "commiter_ai.generate_commit",
