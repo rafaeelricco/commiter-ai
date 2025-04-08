@@ -52,6 +52,18 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                await this._unstageFile(data.value)
                break
             }
+            case 'stageAllChanges': {
+               await this._stageAllChanges()
+               break
+            }
+            case 'unstageAllChanges': {
+               await this._unstageAllChanges()
+               break
+            }
+            case 'refreshChanges': {
+               await this._sendRepositoryState()
+               break
+            }
             case 'generateCommit': {
                await this._generateCommitMessage()
                break
@@ -91,35 +103,57 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
       const repo = gitApi.repositories[0]
 
-      // Get repository state including staged, unstaged, and untracked files
-      const state = {
-         branch: repo.state.HEAD?.name || '',
-         staged: this._formatChangedFiles(repo.state.indexChanges),
-         unstaged: this._formatChangedFiles(repo.state.workingTreeChanges),
-         untracked: this._formatChangedFiles(repo.state.untrackedChanges),
-         commitMessage: repo.inputBox.value,
-         isGenerating: this._isGenerating
-      }
+      try {
+         // Get repository state including staged, unstaged, and untracked files
+         const state = {
+            branch: repo.state.HEAD?.name || '',
+            staged: this._formatChangedFiles(repo.state.indexChanges || []),
+            unstaged: this._formatChangedFiles(
+               repo.state.workingTreeChanges || []
+            ),
+            untracked: this._formatChangedFiles(
+               repo.state.untrackedChanges || []
+            ),
+            commitMessage: repo.inputBox.value,
+            isGenerating: this._isGenerating
+         }
 
-      this._view?.webview.postMessage({
-         type: 'repositoryState',
-         value: state
-      })
+         this._view?.webview.postMessage({
+            type: 'repositoryState',
+            value: state
+         })
+      } catch (error) {
+         console.error('Error getting repository state:', error)
+         this._view?.webview.postMessage({
+            type: 'error',
+            value:
+               'Error getting repository state: ' +
+               (error instanceof Error ? error.message : String(error))
+         })
+      }
    }
 
    private _formatChangedFiles(changes: any[] = []) {
       return changes.map((change) => {
+         // Get the file path relative to the repository root
          const path = change.uri.path
-         const fileName = path.split('/').pop()
-         const folderPath = path.substring(0, path.length - fileName.length)
+         const relativePath = change.relativePath || path.split('/').pop()
+
+         // For files in subfolders, we need the folder path and filename separate
+         const pathParts = relativePath.split('/')
+         const fileName = pathParts.pop() || ''
+         const folderPath =
+            pathParts.length > 0 ? pathParts.join('/') + '/' : ''
 
          return {
             fileName,
             folderPath,
+            relativePath,
             fullPath: path,
             status: change.status,
             uri: change.uri.toString(),
-            statusText: this._getStatusText(change.status)
+            statusText: this._getStatusText(change.status),
+            statusCode: this._getStatusCode(change.status)
          }
       })
    }
@@ -145,31 +179,137 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
       }
    }
 
-   private async _stageFile(uri: string) {
-      const gitApi = await this._ensureGitApi()
-      if (!gitApi || gitApi.repositories.length === 0) return
+   private _getStatusCode(status: string): string {
+      switch (status) {
+         case 'A':
+            return 'A'
+         case 'M':
+            return 'M'
+         case 'D':
+            return 'D'
+         case 'R':
+            return 'R'
+         case 'C':
+            return 'C'
+         case 'U':
+            return 'U'
+         case '?':
+            return '?'
+         default:
+            return status
+      }
+   }
 
-      const repo = gitApi.repositories[0]
-      await repo.add([vscode.Uri.parse(uri)])
-      await this._sendRepositoryState()
+   private async _stageFile(uri: string) {
+      try {
+         const gitApi = await this._ensureGitApi()
+         if (!gitApi || gitApi.repositories.length === 0) return
+
+         const repo = gitApi.repositories[0]
+
+         // Convert string URI back to vscode URI object
+         const fileUri = vscode.Uri.parse(uri)
+
+         // Add file to index
+         await repo.add([fileUri])
+
+         // Update UI after a small delay to ensure Git has updated
+         setTimeout(() => this._sendRepositoryState(), 300)
+      } catch (error) {
+         console.error('Error staging file:', error)
+         vscode.window.showErrorMessage(
+            'Error staging file: ' +
+               (error instanceof Error ? error.message : String(error))
+         )
+      }
    }
 
    private async _unstageFile(uri: string) {
-      const gitApi = await this._ensureGitApi()
-      if (!gitApi || gitApi.repositories.length === 0) return
+      try {
+         const gitApi = await this._ensureGitApi()
+         if (!gitApi || gitApi.repositories.length === 0) return
 
-      const repo = gitApi.repositories[0]
-      await repo.revert([vscode.Uri.parse(uri)])
-      await this._sendRepositoryState()
+         const repo = gitApi.repositories[0]
+
+         // Convert string URI back to vscode URI object
+         const fileUri = vscode.Uri.parse(uri)
+
+         // Unstage the file (using reset on the specific file)
+         await repo.unstage([fileUri])
+
+         // Update UI after a small delay to ensure Git has updated
+         setTimeout(() => this._sendRepositoryState(), 300)
+      } catch (error) {
+         console.error('Error unstaging file:', error)
+         vscode.window.showErrorMessage(
+            'Error unstaging file: ' +
+               (error instanceof Error ? error.message : String(error))
+         )
+      }
+   }
+
+   private async _stageAllChanges() {
+      try {
+         const gitApi = await this._ensureGitApi()
+         if (!gitApi || gitApi.repositories.length === 0) return
+
+         const repo = gitApi.repositories[0]
+
+         // Stage all changes
+         await repo.add([])
+
+         // Update UI
+         setTimeout(() => this._sendRepositoryState(), 300)
+      } catch (error) {
+         console.error('Error staging all changes:', error)
+         vscode.window.showErrorMessage(
+            'Error staging all changes: ' +
+               (error instanceof Error ? error.message : String(error))
+         )
+      }
+   }
+
+   private async _unstageAllChanges() {
+      try {
+         const gitApi = await this._ensureGitApi()
+         if (!gitApi || gitApi.repositories.length === 0) return
+
+         const repo = gitApi.repositories[0]
+
+         // Unstage all changes
+         await repo.unstage([])
+
+         // Update UI
+         setTimeout(() => this._sendRepositoryState(), 300)
+      } catch (error) {
+         console.error('Error unstaging all changes:', error)
+         vscode.window.showErrorMessage(
+            'Error unstaging all changes: ' +
+               (error instanceof Error ? error.message : String(error))
+         )
+      }
    }
 
    private async _openDiff(uri: string) {
-      await vscode.commands.executeCommand(
-         'vscode.diff',
-         vscode.Uri.parse(`${uri}~`),
-         vscode.Uri.parse(uri),
-         'File Changes'
-      )
+      try {
+         const gitApi = await this._ensureGitApi()
+         if (!gitApi || gitApi.repositories.length === 0) return
+
+         const fileUri = vscode.Uri.parse(uri)
+
+         await vscode.commands.executeCommand(
+            'vscode.diff',
+            toGitUri(fileUri, '~'), // Previous version
+            fileUri, // Current version
+            'File Changes'
+         )
+      } catch (error) {
+         console.error('Error opening diff:', error)
+         vscode.window.showErrorMessage(
+            'Error opening diff: ' +
+               (error instanceof Error ? error.message : String(error))
+         )
+      }
    }
 
    private async _discardChanges(uri: string) {
@@ -180,12 +320,24 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
       )
 
       if (result === 'Discard Changes') {
-         const gitApi = await this._ensureGitApi()
-         if (!gitApi || gitApi.repositories.length === 0) return
+         try {
+            const gitApi = await this._ensureGitApi()
+            if (!gitApi || gitApi.repositories.length === 0) return
 
-         const repo = gitApi.repositories[0]
-         await repo.clean([vscode.Uri.parse(uri)])
-         await this._sendRepositoryState()
+            const repo = gitApi.repositories[0]
+            const fileUri = vscode.Uri.parse(uri)
+
+            await repo.clean([fileUri])
+
+            // Update UI
+            setTimeout(() => this._sendRepositoryState(), 300)
+         } catch (error) {
+            console.error('Error discarding changes:', error)
+            vscode.window.showErrorMessage(
+               'Error discarding changes: ' +
+                  (error instanceof Error ? error.message : String(error))
+            )
+         }
       }
    }
 
@@ -195,14 +347,24 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          return
       }
 
-      const gitApi = await this._ensureGitApi()
-      if (!gitApi || gitApi.repositories.length === 0) return
+      try {
+         const gitApi = await this._ensureGitApi()
+         if (!gitApi || gitApi.repositories.length === 0) return
 
-      const repo = gitApi.repositories[0]
-      await repo.commit(message)
-      await this._sendRepositoryState()
+         const repo = gitApi.repositories[0]
+         await repo.commit(message)
 
-      vscode.window.showInformationMessage('Changes committed successfully!')
+         // Update UI
+         setTimeout(() => this._sendRepositoryState(), 300)
+
+         vscode.window.showInformationMessage('Changes committed successfully!')
+      } catch (error) {
+         console.error('Error committing changes:', error)
+         vscode.window.showErrorMessage(
+            'Error committing changes: ' +
+               (error instanceof Error ? error.message : String(error))
+         )
+      }
    }
 
    private async _generateCommitMessage() {
@@ -454,9 +616,11 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                 <title>Commiter AI</title>
                 <style>
                     :root {
-                        --section-gap: 10px;
-                        --border-radius: 4px;
-                        --animation-duration: 0.25s;
+                        --section-gap: 0px;
+                        --border-radius: 0px;
+                        --animation-duration: 0.2s;
+                        --scm-background: var(--vscode-sideBar-background);
+                        --file-badge-color: var(--vscode-editorInfo-foreground);
                     }
                     
                     body {
@@ -464,8 +628,10 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         margin: 0;
                         font-family: var(--vscode-font-family);
                         color: var(--vscode-editor-foreground);
-                        background-color: var(--vscode-sideBar-background);
+                        background-color: var(--scm-background);
                         font-size: var(--vscode-font-size);
+                        overflow: hidden;
+                        height: 100vh;
                     }
                     
                     * {
@@ -484,7 +650,6 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         display: flex;
                         justify-content: space-between;
                         align-items: center;
-                        border-bottom: 1px solid var(--vscode-panel-border);
                     }
                     
                     header h1 {
@@ -493,12 +658,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         display: flex;
                         align-items: center;
                         gap: 8px;
+                        font-weight: normal;
+                    }
+                    
+                    .sparkle-icon {
+                        padding-right: 4px;
                     }
                     
                     .icon {
                         display: inline-flex;
-                        width: 16px;
-                        height: 16px;
                         align-items: center;
                         justify-content: center;
                     }
@@ -516,19 +684,16 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     .sections {
                         flex: 1;
                         overflow-y: auto;
-                        padding: var(--section-gap);
                         display: flex;
                         flex-direction: column;
-                        gap: var(--section-gap);
                     }
                     
                     .section {
-                        background-color: var(--vscode-sideBar-background);
-                        border-radius: var(--border-radius);
+                        margin-bottom: var(--section-gap);
                     }
                     
                     .section-header {
-                        padding: 4px 12px;
+                        padding: 4px 20px 4px 12px;
                         font-weight: 600;
                         font-size: 13px;
                         display: flex;
@@ -536,10 +701,38 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         align-items: center;
                         cursor: pointer;
                         user-select: none;
-                        color: var(--vscode-sideBarSectionHeader-foreground);
-                        background-color: var(--vscode-sideBarSectionHeader-background);
-                        border-top-left-radius: var(--border-radius);
-                        border-top-right-radius: var(--border-radius);
+                        position: sticky;
+                        top: 0;
+                        z-index: 1;
+                        background-color: var(--scm-background);
+                    }
+                    
+                    .section-header-left {
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                    }
+                    
+                    .section-header-actions {
+                        display: flex;
+                        gap: 12px;
+                        opacity: 0.7;
+                    }
+                    
+                    .section-header-actions .icon {
+                        cursor: pointer;
+                    }
+                    
+                    .section-header-actions .icon:hover {
+                        opacity: 0.8;
+                    }
+                    
+                    .arrow-icon {
+                        transition: transform var(--animation-duration);
+                    }
+                    
+                    .collapsed .arrow-icon {
+                        transform: rotate(-90deg);
                     }
                     
                     .badge {
@@ -553,10 +746,12 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         display: inline-flex;
                         align-items: center;
                         justify-content: center;
+                        margin-left: 8px;
                     }
                     
                     .section-content {
                         overflow: hidden;
+                        max-height: 5000px;
                         transition: max-height var(--animation-duration) ease;
                     }
                     
@@ -571,7 +766,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     }
                     
                     .file-item {
-                        padding: 4px 12px 4px 24px;
+                        padding: 3px 12px 3px 24px;
                         display: flex;
                         align-items: center;
                         cursor: pointer;
@@ -589,15 +784,26 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     }
                     
                     .file-icon {
+                        width: 16px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                         margin-right: 6px;
-                        color: var(--vscode-icon-foreground);
-                        opacity: 0.7;
+                        flex-shrink: 0;
                     }
                     
-                    .file-status {
-                        font-size: 11px;
-                        margin-left: auto;
-                        opacity: 0.7;
+                    .file-path {
+                        white-space: nowrap;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        flex: 1;
+                    }
+                    
+                    .file-status-badge {
+                        margin-left: 8px;
+                        color: var(--file-badge-color);
+                        font-size: 12px;
+                        font-weight: 600;
                     }
                     
                     .file-actions {
@@ -607,7 +813,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         gap: 8px;
                     }
                     
-                    .file-item:hover .file-status {
+                    .file-item:hover .file-status-badge {
                         display: none;
                     }
                     
@@ -630,7 +836,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         padding: 10px;
                         display: flex;
                         flex-direction: column;
-                        gap: 8px;
+                        gap: 10px;
                         border-top: 1px solid var(--vscode-panel-border);
                     }
                     
@@ -642,7 +848,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         color: var(--vscode-input-foreground);
                         border: 1px solid var(--vscode-input-border, transparent);
                         border-radius: var(--border-radius);
-                        padding: 6px 8px;
+                        padding: 8px 10px;
                         font-family: var(--vscode-font-family);
                         font-size: var(--vscode-font-size);
                     }
@@ -661,15 +867,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         color: var(--vscode-button-foreground);
                         border: 1px solid var(--vscode-button-border, transparent);
                         border-radius: var(--border-radius);
-                        padding: 4px 12px;
+                        padding: 6px 14px;
                         cursor: pointer;
                         font-family: var(--vscode-font-family);
                         font-size: var(--vscode-font-size);
                         white-space: nowrap;
                         display: inline-flex;
                         align-items: center;
-                        gap: 4px;
-                        height: 28px;
+                        gap: 6px;
+                        height: 30px;
                     }
                     
                     button:hover {
@@ -717,7 +923,6 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         text-align: center;
                         padding: 24px 16px;
                         color: var(--vscode-disabledForeground);
-                        height: 100%;
                     }
                     
                     .empty-state-icon {
@@ -728,7 +933,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     .status-message {
                         font-size: 12px;
                         padding: 8px;
-                        margin-top: 8px;
+                        margin-top: 0;
                         border-radius: var(--border-radius);
                     }
                     
@@ -750,7 +955,12 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         gap: 4px;
                         font-size: 12px;
                         color: var(--vscode-descriptionForeground);
-                        margin-left: 6px;
+                        margin-left: 12px;
+                    }
+                    
+                    .dropdown-button {
+                        margin-left: auto;
+                        margin-right: 8px;
                     }
                 </style>
             </head>
@@ -758,7 +968,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                 <div class="container">
                     <header>
                         <h1>
-                            <span class="icon">✨</span> 
+                            <span class="sparkle-icon">✨</span> 
                             Commiter AI
                             <span class="branch-info" id="branch-info"></span>
                         </h1>
@@ -767,9 +977,16 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     
                     <div class="sections">
                         <div class="section" id="changes-section">
-                            <div class="section-header" data-toggle="changes">
-                                <span>Changes</span>
-                                <span class="badge" id="changes-badge">0</span>
+                            <div class="section-header">
+                                <div class="section-header-left">
+                                    <span class="arrow-icon">▼</span>
+                                    <span>Changes</span>
+                                    <span class="badge" id="changes-badge">0</span>
+                                </div>
+                                <div class="section-header-actions">
+                                    <span class="icon" id="stage-all-button" title="Stage All Changes">+</span>
+                                    <span class="icon" id="refresh-button" title="Refresh">↻</span>
+                                </div>
                             </div>
                             <div class="section-content">
                                 <ul class="file-list" id="changes-list"></ul>
@@ -777,9 +994,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         </div>
                         
                         <div class="section" id="staged-section">
-                            <div class="section-header" data-toggle="staged">
-                                <span>Staged Changes</span>
-                                <span class="badge" id="staged-badge">0</span>
+                            <div class="section-header">
+                                <div class="section-header-left">
+                                    <span class="arrow-icon">▼</span>
+                                    <span>Staged Changes</span>
+                                    <span class="badge" id="staged-badge">0</span>
+                                </div>
+                                <div class="section-header-actions">
+                                    <span class="icon" id="unstage-all-button" title="Unstage All">-</span>
+                                </div>
                             </div>
                             <div class="section-content">
                                 <ul class="file-list" id="staged-list"></ul>
@@ -799,6 +1022,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                                 Generate Message
                             </button>
                             <button id="commit-button" class="full-width" disabled>
+                                <span class="icon">✓</span>
                                 Commit
                             </button>
                         </div>
@@ -823,6 +1047,9 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     const statusMessage = document.getElementById('status-message');
                     const settingsButton = document.getElementById('settings-button');
                     const branchInfo = document.getElementById('branch-info');
+                    const stageAllButton = document.getElementById('stage-all-button');
+                    const unstageAllButton = document.getElementById('unstage-all-button');
+                    const refreshButton = document.getElementById('refresh-button');
                     
                     // State
                     let state = {
@@ -839,7 +1066,12 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     function initializeUI() {
                         // Section collapsing
                         document.querySelectorAll('.section-header').forEach(header => {
-                            header.addEventListener('click', () => {
+                            header.addEventListener('click', (e) => {
+                                // Don't toggle collapse if clicking on action buttons
+                                if (e.target.closest('.section-header-actions')) {
+                                    return;
+                                }
+                                
                                 const section = header.parentElement;
                                 section.classList.toggle('collapsed');
                             });
@@ -861,6 +1093,24 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                         // Settings button
                         settingsButton.addEventListener('click', () => {
                             vscode.postMessage({ type: 'showSettings' });
+                        });
+                        
+                        // Stage all changes
+                        stageAllButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            vscode.postMessage({ type: 'stageAllChanges' });
+                        });
+                        
+                        // Unstage all changes
+                        unstageAllButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            vscode.postMessage({ type: 'unstageAllChanges' });
+                        });
+                        
+                        // Refresh button
+                        refreshButton.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            vscode.postMessage({ type: 'refreshChanges' });
                         });
                         
                         // Commit message input
@@ -898,6 +1148,11 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                     });
                     
                     function updateRepositoryState(newState) {
+                        if (newState.error) {
+                            showStatus('Error: ' + newState.error, 'status-error');
+                            return;
+                        }
+                        
                         state = newState;
                         
                         // Update branch info
@@ -935,8 +1190,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                             const emptyItem = document.createElement('li');
                             emptyItem.className = 'empty-state';
                             emptyItem.innerHTML = \`
-                                <div class="empty-state-icon">📁</div>
-                                <div>No \${type === 'unstaged' ? 'changes' : 'staged changes'} found</div>
+                                <div>No \${type === 'unstaged' ? 'changes' : 'staged changes'}</div>
                             \`;
                             listElement.appendChild(emptyItem);
                             return;
@@ -946,39 +1200,38 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                             const item = document.createElement('li');
                             item.className = 'file-item';
                             
-                            // Status icon
+                            // File icon based on status
                             let fileIcon = '📄';
                             if (file.status === 'D') fileIcon = '🗑️';
-                            if (file.status === 'A') fileIcon = '🆕';
-                            if (file.status === 'M') fileIcon = '📝';
+                            if (file.status === 'A') fileIcon = '📄';
+                            if (file.status === 'M') fileIcon = '📄';
+                            
+                            // Get file path for display
+                            const displayPath = file.folderPath ? \`\${file.folderPath}\${file.fileName}\` : file.fileName;
                             
                             // Create item content
                             item.innerHTML = \`
-                                <span class="file-icon">\${fileIcon}</span>
-                                <span class="file-name">\${file.fileName}</span>
-                                <span class="file-status">\${file.statusText}</span>
+                                <div class="file-icon">\${fileIcon}</div>
+                                <div class="file-path" title="\${displayPath}">\${displayPath}</div>
+                                <div class="file-status-badge">\${file.statusCode}</div>
                                 <div class="file-actions">
-                                    <span class="file-action file-view" title="View Diff">👁️</span>
                                     \${type === 'unstaged' ? 
-                                        '<span class="file-action file-stage" title="Stage File">➕</span>' :
-                                        '<span class="file-action file-unstage" title="Unstage File">➖</span>'
-                                    }
-                                    \${type === 'unstaged' ? 
-                                        '<span class="file-action file-discard" title="Discard Changes">🗑️</span>' : ''
+                                        '<span class="file-action file-stage" title="Stage Changes">+</span>' :
+                                        '<span class="file-action file-unstage" title="Unstage Changes">-</span>'
                                     }
                                 </div>
                             \`;
                             
-                            // Add event listeners
-                            item.querySelector('.file-view').addEventListener('click', (e) => {
-                                e.stopPropagation();
+                            // Add event listeners for clicking on file (view diff)
+                            item.addEventListener('click', () => {
                                 vscode.postMessage({ 
                                     type: 'openDiff', 
                                     value: file.uri 
                                 });
                             });
                             
-                            if (type === 'unstaged') {
+                            // Add event listeners for action buttons
+                            if (type === 'unstaged' && item.querySelector('.file-stage')) {
                                 item.querySelector('.file-stage').addEventListener('click', (e) => {
                                     e.stopPropagation();
                                     vscode.postMessage({ 
@@ -986,17 +1239,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                                         value: file.uri 
                                     });
                                 });
-                                
-                                if (item.querySelector('.file-discard')) {
-                                    item.querySelector('.file-discard').addEventListener('click', (e) => {
-                                        e.stopPropagation();
-                                        vscode.postMessage({ 
-                                            type: 'discardChanges', 
-                                            value: file.uri 
-                                        });
-                                    });
-                                }
-                            } else {
+                            } else if (item.querySelector('.file-unstage')) {
                                 item.querySelector('.file-unstage').addEventListener('click', (e) => {
                                     e.stopPropagation();
                                     vscode.postMessage({ 
@@ -1005,14 +1248,6 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
                                     });
                                 });
                             }
-                            
-                            // Add entire item click to view diff
-                            item.addEventListener('click', () => {
-                                vscode.postMessage({ 
-                                    type: 'openDiff', 
-                                    value: file.uri 
-                                });
-                            });
                             
                             listElement.appendChild(item);
                         });
@@ -1032,4 +1267,15 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
             </body>
             </html>`
    }
+}
+
+// Helper function to create Git URI for diff
+function toGitUri(uri: vscode.Uri, ref: string): vscode.Uri {
+   return uri.with({
+      scheme: 'git',
+      query: JSON.stringify({
+         path: uri.fsPath,
+         ref: ref
+      })
+   })
 }
