@@ -42,7 +42,7 @@
             {
                "id": "commiterAiActivity",
                "title": "Commiter AI",
-               "icon": "src/assets/sparkle-dark.png"
+               "icon": "src/assets/dark-icon-sidebar.svg"
             }
          ]
       },
@@ -62,8 +62,8 @@
             "title": "Generate Commit",
             "category": "Commit AI",
             "icon": {
-               "light": "src/assets/sparkle-light.png",
-               "dark": "src/assets/sparkle-dark.png"
+               "light": "src/assets/white-icon-sidebar.svg ",
+               "dark": "src/assets/dark-icon-sidebar.svg"
             }
          }
       ],
@@ -102,7 +102,7 @@
             "commiter_ai.prompt.model": {
                "title": "AI Model",
                "type": "string",
-               "default": "google/gemini-2.0-pro-exp-02-05:free",
+               "default": "openrouter/quasar-alpha",
                "markdownDescription": "**AI Model Selection**\nChoose from [OpenRouter models](https://openrouter.ai/models). Consider:\n- Cost per token\n- Context window size\n- Response speed"
             },
             "commiter_ai.prompt.commit_style": {
