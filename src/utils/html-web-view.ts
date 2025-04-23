@@ -618,13 +618,11 @@ export function _getHtmlForWebview(webview: vscode.Webview): string {
         <div class="container">
            <header>
               <h1>
-                 <span class="sparkle-icon">✨</span> 
                  Commiter AI
                  <span class="branch-info" id="branch-info"></span>
               </h1>
               <span class="icon settings-icon" id="settings-button">⚙️</span>
            </header>
-           
            <div class="sections">
               <div class="section" id="changes-section">
                  <div class="section-header">
@@ -642,7 +640,6 @@ export function _getHtmlForWebview(webview: vscode.Webview): string {
                     <ul class="file-list" id="changes-list"></ul>
                  </div>
               </div>
-              
               <div class="section" id="staged-section">
                  <div class="section-header">
                     <div class="section-header-left">
@@ -658,8 +655,7 @@ export function _getHtmlForWebview(webview: vscode.Webview): string {
                     <ul class="file-list" id="staged-list"></ul>
                  </div>
               </div>
-           </div>
-           
+           </div>           
            <div class="commit-section">
               <textarea 
                  id="commit-message" 
@@ -680,7 +676,6 @@ export function _getHtmlForWebview(webview: vscode.Webview): string {
               <div id="status-message" style="display: none;" class="status-message"></div>
            </div>
         </div>
- 
         <script nonce="${nonce}">
            ${_getWebviewScript()}
         </script>
