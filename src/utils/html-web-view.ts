@@ -664,11 +664,9 @@ export function _getHtmlForWebview(webview: vscode.Webview): string {
               
               <div class="commit-actions">
                  <button id="generate-button" class="secondary">
-                    <span class="icon">✨</span>
                     Generate Message
                  </button>
                  <button id="commit-button" class="full-width" disabled>
-                    <span class="icon">✓</span>
                     Commit
                  </button>
               </div>
