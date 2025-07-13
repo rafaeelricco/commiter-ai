@@ -139,7 +139,7 @@
    "scripts": {
       "dev": "tsx ./src/extension.ts",
       "dev:watch": "./development/scripts/dev.sh",
-      "watch": "tsc -p tsconfig.json -w",
+      "watch": "tsc -p tsconfig.json -w --preserveWatchOutput",
       "build": "tsc -p tsconfig.json && tsx ./src/utils/fix-aliases.ts",
       "lint": "eslint src --ext ts",
       "test": "tsc -p tsconfig.json && tsx ./src/utils/fix-aliases.ts && tsx ./src/test/run-tests.ts",
