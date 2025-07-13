@@ -1,3 +1,4 @@
+import * as path from 'path'
 import * as vscode from 'vscode'
 
 import { generateCommitMessage } from '@/extension/api'
@@ -476,10 +477,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          if (soundEnabled) {
             try {
                const soundPlay = require('sound-play')
-               const soundPath = vscode.Uri.joinPath(
-                  this._extensionUri,
-                  'assets',
-                  'success.MP3'
+               const soundPath = vscode.Uri.file(
+                  path.join(this._extensionUri.fsPath, 'assets', 'success.MP3')
                ).fsPath
                await soundPlay.play(soundPath)
             } catch (soundError) {

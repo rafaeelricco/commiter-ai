@@ -13,9 +13,6 @@
 /out
 /dist
 
-# development
-/development
-
 # misc
 .DS_Store
 .env
