@@ -13,6 +13,9 @@
 /out
 /dist
 
+# vscode
+.vscode-test
+
 # misc
 .DS_Store
 .env
