@@ -5,12 +5,22 @@
             "name": "Run Extension",
             "type": "extensionHost",
             "request": "launch",
+            "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+            "outFiles": ["${workspaceFolder}/out/**/*.js"],
+            "preLaunchTask": "npm: build",
+            "skipFiles": ["<node_internals>/**"],
+            "smartStep": true,
+            "sourceMaps": true
+        },
+        {
+            "name": "Extension Tests",
+            "type": "extensionHost", 
+            "request": "launch",
             "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}"
+                "--extensionDevelopmentPath=${workspaceFolder}",
+                "--extensionTestsPath=${workspaceFolder}/out/test"
             ],
-            "outFiles": [
-                "${workspaceFolder}/out/**/*.js"
-            ],
+            "outFiles": ["${workspaceFolder}/out/**/*.js"],
             "preLaunchTask": "npm: build"
         }
     ]

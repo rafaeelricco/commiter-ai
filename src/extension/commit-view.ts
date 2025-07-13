@@ -1,5 +1,6 @@
 import * as path from 'path'
 import * as vscode from 'vscode'
+import * as soundPlay from 'sound-play'
 
 import { generateCommitMessage } from '@/extension/api'
 import { _getHtmlForWebview } from '@/utils/html-web-view'
@@ -52,7 +53,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
 
    public resolveWebviewView(
       webviewView: vscode.WebviewView,
-      context: vscode.WebviewViewResolveContext,
+      _context: vscode.WebviewViewResolveContext,
       _token: vscode.CancellationToken
    ) {
       this._view = webviewView
@@ -185,7 +186,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
       }
    }
 
-   private _formatChangedFiles(changes: any[] = []) {
+   private _formatChangedFiles(changes: GitChange[] = []) {
       if (!changes.length) return []
 
       const result = new Array(changes.length)
@@ -194,6 +195,8 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
          const change = changes[i]
          const path = change.uri.path
          const relativePath = change.relativePath || path.split('/').pop()
+
+         if (!relativePath) continue
 
          const pathParts = relativePath.split('/')
          const fileName = pathParts.pop() || ''
@@ -476,7 +479,7 @@ export class CommitViewProvider implements vscode.WebviewViewProvider {
             .get<boolean>('sound_enabled')
          if (soundEnabled) {
             try {
-               const soundPlay = require('sound-play')
+               // soundPlay is imported at the top of the file
                const soundPath = vscode.Uri.file(
                   path.join(this._extensionUri.fsPath, 'assets', 'success.MP3')
                ).fsPath
