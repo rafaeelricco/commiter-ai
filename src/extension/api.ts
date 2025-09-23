@@ -36,55 +36,62 @@ interface OpenRouterResponse {
 function getCommitStylePrompt(style: string): string {
    const styles: Record<string, string> = {
       conventional:
-         'Generate a commit message following the Conventional Commits format with a concise description based on the changes made:\n\n' +
+         'Generate a Conventional Commit with a clear subject and an optional body summarizing concrete changes.\n\n' +
          'Format:\n' +
-         'type(optional scope): concise description\n\n' +
-         'brief paragraph explaining the purpose and key changes - be direct and focused\n\n' +
-         '- bullet point for each specific change, implementation, or improvement\n' +
-         '- include bullet points based on actual changes (typically 4-9 points)\n' +
-         '- describe functions, components, and services that were modified\n' +
-         '- mention new features, bug fixes, or improvements clearly\n\n' +
-         'Choose an appropriate type from: feat, fix, docs, style, refactor, perf, test, build, ci, chore\n' +
-         'Ensure all text is in lowercase, including the first letter of each sentence.\n\n' +
-         'Example:\n' +
-         'feat(auth): implement user authentication flow\n\n' +
-         'this commit introduces the authentication flow for users with focus on security and usability. key additions include:\n\n' +
-         '- added login and registration forms in the AuthComponent\n' +
-         '- implemented token validation using AuthService\n' +
-         '- added proper error handling for network failures\n' +
-         '- improved UI feedback during authentication process\n\n' +
-         'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
+         'type(optional scope): subject (lowercase, imperative, no period)\n\n' +
+         'Then a blank line and one of:\n' +
+         '- a short paragraph explaining what changed and why; or\n' +
+         '- 2–5 bullet points describing specific changes (files, functions, behaviors), each starting with "- " and capitalized\n\n' +
+         'Guidelines:\n' +
+         '- types: feat, fix, docs, style, refactor, perf, test, build, ci, chore\n' +
+         '- keep the subject <= 72 chars and start with lowercase\n' +
+         '- start body sentences with a capital letter; keep bullet points capitalized\n\n' +
+         'Return ONLY the commit message text, without code fences, headers, or the word "diff".',
 
       linus:
-         'Generate a commit message following the Linus Torvalds style with a short title followed by a more detailed explanation.\n\n' +
+         'Generate a commit message in the Linux kernel style: a short, imperative subject on the first line, followed by a blank line and a detailed explanation.\n\n' +
          'Format:\n' +
-         'Title: brief explanation in one line (use imperative with lowercase first letter)\n\n' +
-         'More detailed paragraph explaining the changes, the problem being solved, and motivation. Ensure the first letter of the title is lowercase.\n\n' +
+         'subject (lowercase, imperative, no period)\n\n' +
+         'One short paragraph explaining what changed and why. Optionally include 2–5 bullet points for key specifics, each starting with "- " and capitalized.\n\n' +
          'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       context:
-         'Generate a commit message with the context or area of the project in square brackets, followed by a description.\n\n' +
-         'Make sure the first letter after the context is lowercase.\n\n' +
-         'Example: "[frontend] add login component" or "[api] fix token validation" NOT "[frontend] Add login" or "[API] Fix token"\n\n' +
+         'Generate a commit message with a context tag and a clear subject, plus an optional body.\n\n' +
+         'Format:\n' +
+         '[context] subject (first letter after ] lowercase, imperative, no period)\n\n' +
+         'Then a blank line and either a short paragraph or 2–5 "- " bullet points with capitalized entries describing specific changes.\n\n' +
          'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       ticket:
-         'Generate a commit message that references a ticket ID followed by a description of the change.\n\n' +
-         'Make sure the first letter after the ticket reference is lowercase.\n\n' +
-         'Example: "JIRA-101 - add search functionality" or "GH-4321 - fix performance issue" NOT "JIRA-101 - Add search" or "GH-4321 - Fix issue"\n\n' +
+         'Generate a commit message that references a ticket ID followed by a clear subject, plus an optional body.\n\n' +
+         'Format:\n' +
+         'ABC-123 - subject (lowercase, imperative, no period)\n\n' +
+         'Then a blank line and either a short paragraph or 2–5 "- " bullet points with capitalized entries describing specific changes.\n\n' +
          'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       symbol:
-         'Generate a commit message that uses a symbol to identify the type of change, followed by a description.\n\n' +
-         'Use symbols like: [+] for additions, [-] for removals, [^] for updates, [*] for fixes\n' +
-         'Make sure the first letter after the symbol is lowercase.\n\n' +
-         'Example: "[+] add search feature" or "[*] fix critical login bug" NOT "[+] Add search" or "[*] Fix bug"\n\n' +
+         'Generate a commit message that uses a symbol to identify the type of change on the first line, followed by a subject and an optional body.\n\n' +
+         'Symbols: [+] addition, [-] removal, [^] update, [*] fix\n\n' +
+         'Format:\n' +
+         '[+] subject (first letter after ] lowercase, imperative, no period)\n\n' +
+         'Then a blank line and either a short paragraph or 2–5 "- " bullet points with capitalized entries describing specific changes.\n\n' +
          'Return ONLY the commit message text, without any formatting, headers, or the word "diff".',
 
       concise:
-         'Generate a clear and concise commit message that describes the changes made. Focus on the purpose of the changes rather than just listing modifications.\n\n' +
-         'Make sure the first letter of the commit message is lowercase.\n\n' +
-         'Example: "add user authentication" or "fix memory leak in API" NOT "Add user authentication" or "Fix memory leak"\n\n' +
+         'Generate a concise, real-world commit message: a short, imperative subject on the first line (lowercase), then a blank line and a brief body summarizing what changed.\n\n' +
+         'Format:\n' +
+         'subject (lowercase, imperative, no period)\n\n' +
+         'Body:\n' +
+         '- either a short paragraph explaining what and why; or\n' +
+         '- 2–5 bullet points, each starting with "- " and capitalized, describing specific changes (files, functions, behaviors)\n\n' +
+         'Examples:\n' +
+         'add docker configuration files\n\n' +
+         'Add Dockerfile, docker-compose.yml and .dockerignore for containerized deployment\n' +
+         'Configure health checks, resource limits and security settings\n\n' +
+         'update vite config and dependencies\n\n' +
+         '- Add preview server configuration in vite.config.ts\n' +
+         '- Remove unused tw-animate-css import from globals.css\n' +
+         '- Simplify build script and update dependencies in package.json\n\n' +
          'Return ONLY the commit message text, without any formatting, headers, or the word "diff".'
    }
 

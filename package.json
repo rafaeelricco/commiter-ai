@@ -2,7 +2,7 @@
    "name": "commiter-ai-generator",
    "displayName": "Commiter Ai",
    "description": "Effortlessly generate smart commit messages with AI. Streamline your workflow and maintain a clean commit history.",
-   "version": "1.1.6",
+   "version": "1.1.7",
    "publisher": "r1cco",
    "license": "MIT",
    "engines": {
@@ -102,7 +102,7 @@
             "commiter_ai.prompt.model": {
                "title": "AI Model",
                "type": "string",
-               "default": "openrouter/quasar-alpha",
+               "default": "x-ai/grok-4-fast:free",
                "markdownDescription": "**AI Model Selection**\nChoose from [OpenRouter models](https://openrouter.ai/models). Consider:\n- Cost per token\n- Context window size\n- Response speed"
             },
             "commiter_ai.prompt.commit_style": {
