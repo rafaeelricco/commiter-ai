@@ -37,15 +37,6 @@
    "main": "./out/extension.js",
    "activationEvents": [],
    "contributes": {
-      "viewsContainers": {
-         "activitybar": [
-            {
-               "id": "commiterAiActivity",
-               "title": "Commiter AI",
-               "icon": "src/assets/dark-icon-sidebar.svg"
-            }
-         ]
-      },
       "views": {
          "commiterAiActivity": [
             {
