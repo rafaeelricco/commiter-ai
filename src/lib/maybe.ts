@@ -1,6 +1,6 @@
 export { type Maybe, type Nullable, CallableJust as Just, CallableNothing as Nothing, from, catMaybes, mapMaybe, type IMaybe };
 
-import Callable from "@/lib/callable";
+import { Callable } from "@/lib/callable";
 
 type Maybe<T> = Just<T> | Nothing<T>;
 

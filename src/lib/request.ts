@@ -1,6 +1,4 @@
 export {
-  fetchF,
-  fetchWithProgress,
   type OnProgress,
   type FetchError,
   type FetchErrorResponse,
@@ -8,12 +6,15 @@ export {
   NetworkError,
   BadStatus,
   UnableToDecode,
+  fetchF,
+  fetchWithProgress,
   fetchErrorToString,
   mapFetchError
 };
 
-import { Parser } from "@/lib/json/parser";
 import * as p from "@/lib/json/parser";
+
+import { Parser } from "@/lib/json/parser";
 import { Future } from "@/lib/future";
 import { Success } from "@/lib/result";
 import { Nullable } from "@/lib/maybe";

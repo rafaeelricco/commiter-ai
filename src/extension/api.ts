@@ -1,3 +1,5 @@
+export { generateCommitMessage };
+
 import * as vscode from 'vscode'
 
 import {
@@ -98,7 +100,7 @@ function getCommitStylePrompt(style: string): string {
    return styles[style] || styles.concise
 }
 
-export async function generateCommitMessage(
+async function generateCommitMessage(
    diff: string,
    customPrompt?: string
 ): Promise<string> {

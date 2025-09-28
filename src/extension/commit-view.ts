@@ -1,3 +1,5 @@
+export { CommitViewProvider };
+
 import * as path from 'path'
 import * as vscode from 'vscode'
 import * as soundPlay from 'sound-play'
@@ -35,7 +37,7 @@ interface GitAPI {
    onDidChangeRepository?: (callback: () => void) => vscode.Disposable
 }
 
-export class CommitViewProvider implements vscode.WebviewViewProvider {
+class CommitViewProvider implements vscode.WebviewViewProvider {
    public static readonly viewType = 'commiterAiView'
 
    private _view?: vscode.WebviewView

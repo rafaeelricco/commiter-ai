@@ -1,4 +1,6 @@
-export default function Callable(classname: any) {
+export { Callable };
+
+function Callable(classname: any) {
   function apply(target: any, _: any, argumentsList: any[]) {
     return new target(...argumentsList);
   }
