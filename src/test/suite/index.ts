@@ -1,3 +1,5 @@
+export { run };
+
 import { glob } from 'glob'
 import Mocha from 'mocha'
 import * as path from 'path'
@@ -5,12 +7,12 @@ import * as vscode from 'vscode'
 
 // Função para tratar erros globalmente, evitando terminação abrupta
 process.on('uncaughtException', (error) => {
-   console.error('Erro não capturado no processo de teste:')
-   console.error(error)
-   // Não terminamos o processo para manter o VSCode aberto
+  console.error('Erro não capturado no processo de teste:')
+  console.error(error)
+  // Não terminamos o processo para manter o VSCode aberto
 })
 
-export async function run(): Promise<void> {
+async function run(): Promise<void> {
    // Create the mocha test
    const mocha = new Mocha({
       ui: 'tdd',

@@ -1,3 +1,5 @@
+export { generateCommitCommand };
+
 import * as vscode from 'vscode'
 
 import { generateCommitMessage } from '@/extension/api'
@@ -10,7 +12,7 @@ import {
    setCommitMessage
 } from '@/extension/git'
 
-export async function generateCommitCommand(): Promise<void> {
+async function generateCommitCommand(): Promise<void> {
    try {
       if (!isApiKeySet()) {
          const setKeyAction = 'Set API Key'

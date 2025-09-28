@@ -1,6 +1,8 @@
+export { registerExtensionSettings, isApiKeySet, getApiKey, getCustomPrompt, getTemperature, getModel, getCommitStyle, isSoundEnabled };
+
 import * as vscode from 'vscode'
 
-export function registerExtensionSettings(context: vscode.ExtensionContext) {
+function registerExtensionSettings(context: vscode.ExtensionContext) {
    context.subscriptions.push(
       vscode.workspace.onDidChangeConfiguration((e) => {
          if (e.affectsConfiguration('commiter_ai')) {
@@ -41,21 +43,21 @@ export function registerExtensionSettings(context: vscode.ExtensionContext) {
    )
 }
 
-export function isApiKeySet(): boolean {
+function isApiKeySet(): boolean {
    const apiKey = vscode.workspace
       .getConfiguration('commiter_ai')
       .get<string>('api_key')
    return apiKey !== null && apiKey !== undefined && apiKey !== ''
 }
 
-export function getApiKey(): string | null {
+function getApiKey(): string | null {
    return (
       vscode.workspace.getConfiguration('commiter_ai').get<string>('api_key') ||
       null
    )
 }
 
-export function getCustomPrompt(): string {
+function getCustomPrompt(): string {
    return (
       vscode.workspace
          .getConfiguration('commiter_ai')
@@ -63,7 +65,7 @@ export function getCustomPrompt(): string {
    )
 }
 
-export function getTemperature(): number {
+function getTemperature(): number {
    return (
       vscode.workspace
          .getConfiguration('commiter_ai')
@@ -71,7 +73,7 @@ export function getTemperature(): number {
    )
 }
 
-export function getModel(): string {
+function getModel(): string {
    return (
       vscode.workspace
          .getConfiguration('commiter_ai')
@@ -79,7 +81,7 @@ export function getModel(): string {
    )
 }
 
-export function getCommitStyle(): string {
+function getCommitStyle(): string {
    return (
       vscode.workspace
          .getConfiguration('commiter_ai')
@@ -87,7 +89,7 @@ export function getCommitStyle(): string {
    )
 }
 
-export function isSoundEnabled(): boolean {
+function isSoundEnabled(): boolean {
    return vscode.workspace
       .getConfiguration('commiter_ai')
       .get<boolean>('sound_enabled', true)

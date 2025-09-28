@@ -1,8 +1,7 @@
 export { type RemoteData, CallableSuccess as Ready, CallableFailure as Failed, CallableNotAsked as NotAsked, CallableLoading as Loading };
 
 import { Nullable, Maybe, Nothing, Just } from "@/lib/maybe";
-
-import Callable from "@/lib/callable";
+import { Callable } from "@/lib/callable";
 
 type RemoteData<E, T> =
   | NotAsked<E, T> 

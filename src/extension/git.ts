@@ -1,3 +1,5 @@
+export { getCurrentRepository, getStagedDiff, getUnstagedDiff, setCommitMessage, playSound };
+
 import * as path from 'path'
 import * as vscode from 'vscode'
 
@@ -8,11 +10,9 @@ import soundPlay from 'sound-play'
 
 const execAsync = promisify(exec)
 
-export interface GitRepository {
-   rootPath: string
-}
+interface GitRepository { rootPath: string }
 
-export async function getCurrentRepository(): Promise<GitRepository | null> {
+async function getCurrentRepository(): Promise<GitRepository | null> {
    const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports
    if (!gitExtension) {
       throw new Error(
@@ -31,7 +31,7 @@ export async function getCurrentRepository(): Promise<GitRepository | null> {
    }
 }
 
-export async function getStagedDiff(repo: GitRepository): Promise<string> {
+async function getStagedDiff(repo: GitRepository): Promise<string> {
    try {
       const { stdout } = await execAsync('git diff --staged', {
          cwd: repo.rootPath
@@ -46,7 +46,7 @@ export async function getStagedDiff(repo: GitRepository): Promise<string> {
    }
 }
 
-export async function getUnstagedDiff(repo: GitRepository): Promise<string> {
+async function getUnstagedDiff(repo: GitRepository): Promise<string> {
    try {
       const { stdout } = await execAsync('git diff', { cwd: repo.rootPath })
       return stdout
@@ -59,7 +59,7 @@ export async function getUnstagedDiff(repo: GitRepository): Promise<string> {
    }
 }
 
-export function setCommitMessage(message: string): void {
+function setCommitMessage(message: string): void {
    const gitExtension = vscode.extensions.getExtension('vscode.git')?.exports
    if (!gitExtension) {
       throw new Error('Git extension not found')
@@ -74,7 +74,7 @@ export function setCommitMessage(message: string): void {
    repository.inputBox.value = message
 }
 
-export async function playSound(): Promise<void> {
+async function playSound(): Promise<void> {
    try {
       const extensionPath = vscode.extensions.getExtension(
          'r1cco.commiter-ai-generator'

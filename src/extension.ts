@@ -1,10 +1,12 @@
+export { activate, deactivate };
+
 import * as vscode from 'vscode'
 
 import { generateCommitCommand } from '@/extension/commands'
 import { CommitViewProvider } from '@/extension/commit-view'
 import { registerExtensionSettings } from '@/extension/configuration'
 
-export function activate(context: vscode.ExtensionContext) {
+function activate(context: vscode.ExtensionContext) {
    registerExtensionSettings(context)
 
    const gen = vscode.commands.registerCommand(
@@ -23,4 +25,4 @@ export function activate(context: vscode.ExtensionContext) {
    )
 }
 
-export function deactivate() {}
+function deactivate() {}

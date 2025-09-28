@@ -1,12 +1,13 @@
-export { type Result, CallableSuccess as Success, CallableFailure as Failure, traverse, traverse_ };
+export { type Result, type IResult, CallableSuccess as Success, CallableFailure as Failure, traverse, traverse_ };
 
-import Callable from "@/lib/callable";
 import { Trampoline, end, tailRecursive } from "@/lib/trampoline";
 import { List } from "@/lib/list";
+import { Callable } from "@/lib/callable";
+
 
 type Result<E, T> = Success<E, T> | Failure<E, T>;
 
-export interface IResult<E, T> {
+interface IResult<E, T> {
   isSuccess(): boolean;
   isFailure(): boolean;
   map<W>(f: (t: T) => W): Result<E, W>;

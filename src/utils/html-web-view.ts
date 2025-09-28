@@ -1,3 +1,5 @@
+export { _getHtmlForWebview };
+
 import * as vscode from 'vscode'
 
 function getNonce() {
@@ -597,7 +599,7 @@ function _getWebviewScript(): string {
    }
 }
 
-export function _getHtmlForWebview(webview: vscode.Webview): string {
+function _getHtmlForWebview(webview: vscode.Webview): string {
    const nonce = getNonce()
    const csp = `default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; font-src ${webview.cspSource};`
    const cssContent = _getWebviewStyles()
